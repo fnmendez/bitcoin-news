@@ -1,7 +1,9 @@
 import cheerio from "cheerio";
+import dedent from "dedent";
 import moment from "moment";
 
 import { News } from "~/src/types";
+import { SAFE_HTML as SH } from "~/src/utils";
 
 type Instruction = {
   links: { name: string; url: string; keywords: ["bitcoin"] }[];
@@ -24,13 +26,19 @@ export const CNBC: Instruction = {
       const sourceName = $(this).next("div").next("div").children("div").children("a").text().trim();
       const sourceUrl = `https://news.google.com${$(this).children("a").attr("href")}`;
       const time = $(this).next("div").next("div").children("div").children("time").attr("datetime");
+      const humanTime = moment(time).format("YYYY/MM/DD, HH:mm:ss");
       news.push({
         title,
         sourceName,
         link: sourceUrl,
         publishedAt: time ? moment(time).format("dddd D MMMM, HH:mm:ss") : "?",
         timestamp: time ? new Date(time).getTime() : NaN,
-        text: `${title}\n${sourceName}\n${sourceUrl}\n${moment(time).format("dddd D MMMM, HH:mm:ss")}`,
+        text: dedent`
+          <b>${SH(title)}</b>
+          ${SH(sourceName)}
+          ${SH(humanTime)} - <a href='https://bitcoin-news.vercel.app/api/redirect?url=${
+          new URL(sourceUrl).href
+        }'>Read more</a>`,
         keywords,
       });
     });
