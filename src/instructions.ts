@@ -36,9 +36,7 @@ export const CNBC: Instruction = {
         text: dedent`
           <b>${SH(title)}</b>
           ${SH(sourceName)}
-          ${SH(humanTime)} - <a href='https://bitcoin-news.vercel.app/api/redirect?url=${
-          new URL(sourceUrl).href
-        }'>Read more</a>`,
+          ${SH(humanTime)} - <a href='https://bitcoin.francomendez.com/api/redirect?url=${sourceUrl}'>Read more</a>`,
         keywords,
       });
     });
