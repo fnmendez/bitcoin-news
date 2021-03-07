@@ -5,4 +5,5 @@ export type News = {
   link: string;
   title: string;
   text: string;
+  keywords: string[];
 };
