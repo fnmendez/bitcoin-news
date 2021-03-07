@@ -17,6 +17,7 @@ export const sendMessage = async (text: string) => {
       chat_id: chatId,
       text,
       parse_mode: "HTML",
+      disable_web_page_preview: true,
     });
     if (message) sentMessages += 1;
   }
