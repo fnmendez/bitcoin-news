@@ -27,7 +27,7 @@ export const CNBC: Instruction = {
       const sourceUrl = `https://news.google.com${$(this).children("a").attr("href")?.slice(1)}`;
       const time = $(this).next("div").next("div").children("div").children("time").attr("datetime");
       const humanTime = moment(time).format("YYYY/MM/DD, HH:mm:ss");
-      if (title.match(/(Bitcoin|bitcoin)/g)) {
+      if (title.match(/(Bitcoin|bitcoin|BTC|btc)/g)) {
         news.push({
           title,
           sourceName,
