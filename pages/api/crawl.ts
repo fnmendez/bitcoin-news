@@ -51,8 +51,15 @@ async function filterNews(news: News[]): Promise<News[]> {
 }
 
 async function sendNewsToTelegram(news: News[]): Promise<boolean> {
-  const text = news.map((n) => n.text).join("\n\n");
-  const success = await sendMessage(text);
+  const ordered = news.sort((a, b) => a.timestamp - b.timestamp);
+  const batches = CHUNK_ARRAY(ordered, 8);
+  let success = true;
+  for (const batch of batches) {
+    const text = batch.map((n) => n.text).join("\n\n");
+    const ok = await sendMessage(text);
+    success = success && ok;
+    await new Promise((r) => setTimeout(r, 800));
+  }
   return success;
 }
 
