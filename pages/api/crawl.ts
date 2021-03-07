@@ -6,10 +6,10 @@ import { sendMessage } from "~/libs/telegram";
 import { headers } from "~/src/constants";
 import * as instructions from "~/src/instructions";
 import { News } from "~/src/types";
-import { chunkArray } from "~/src/utils";
+import { CHUNK_ARRAY } from "~/src/utils";
 
 async function saveBitcoinNews(news: News[]) {
-  const batches = chunkArray(news, 25);
+  const batches = CHUNK_ARRAY(news, 25);
   for (const batch of batches) {
     const params = {
       RequestItems: {
