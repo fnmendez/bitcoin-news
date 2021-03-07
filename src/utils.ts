@@ -1,4 +1,4 @@
-export const chunkArray = (arr: any[], n): any[][] => {
+export const CHUNK_ARRAY = (arr: any[], n): any[][] => {
   let i = 0;
   const ret: any[] = [];
   while (i < arr.length) {
@@ -6,4 +6,8 @@ export const chunkArray = (arr: any[], n): any[][] => {
     i += n;
   }
   return ret;
+};
+
+export const SAFE_HTML = (text: string) => {
+  return text.replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/&/g, "&amp;");
 };
