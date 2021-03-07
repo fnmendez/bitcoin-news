@@ -24,7 +24,7 @@ export const CNBC: Instruction = {
     $("h3").each(function (this: any) {
       const title = $(this)?.text()?.trim();
       const sourceName = $(this).next("div").next("div").children("div").children("a").text().trim();
-      const sourceUrl = `https://news.google.com${$(this).children("a").attr("href")}`;
+      const sourceUrl = `https://news.google.com${$(this).children("a").attr("href")?.slice(1)}`;
       const time = $(this).next("div").next("div").children("div").children("time").attr("datetime");
       const humanTime = moment(time).format("YYYY/MM/DD, HH:mm:ss");
       if (title.match(/(Bitcoin|bitcoin)/g)) {
