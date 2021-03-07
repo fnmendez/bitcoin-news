@@ -27,18 +27,20 @@ export const CNBC: Instruction = {
       const sourceUrl = `https://news.google.com${$(this).children("a").attr("href")}`;
       const time = $(this).next("div").next("div").children("div").children("time").attr("datetime");
       const humanTime = moment(time).format("YYYY/MM/DD, HH:mm:ss");
-      news.push({
-        title,
-        sourceName,
-        link: sourceUrl,
-        publishedAt: time ? moment(time).format("dddd D MMMM, HH:mm:ss") : "?",
-        timestamp: time ? new Date(time).getTime() : NaN,
-        text: dedent`
+      if (title.match(/(Bitcoin|bitcoin)/g)) {
+        news.push({
+          title,
+          sourceName,
+          link: sourceUrl,
+          publishedAt: time ? moment(time).format("dddd D MMMM, HH:mm:ss") : "?",
+          timestamp: time ? new Date(time).getTime() : NaN,
+          text: dedent`
           <b>${SH(title)}</b>
           ${SH(sourceName)}
           ${SH(humanTime)} - <a href='https://bitcoin.francomendez.com/api/redirect?url=${sourceUrl}'>Read more</a>`,
-        keywords,
-      });
+          keywords,
+        });
+      }
     });
     return news;
   },
