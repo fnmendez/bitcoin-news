@@ -2,6 +2,7 @@ import axios from "axios";
 import { NextApiRequest, NextApiResponse } from "next";
 
 import * as dynamodb from "~/libs/dynamodb";
+import { sendMessage } from "~/libs/telegram";
 import { headers } from "~/src/constants";
 import * as instructions from "~/src/instructions";
 import { News } from "~/src/types";
@@ -17,6 +18,7 @@ async function saveBitcoinNews(news: News[]) {
             Item: {
               source_url: n.link,
               title: n.title,
+              keywords: n.keywords,
               source_name: n.sourceName,
               published_at: n.publishedAt,
               timestamp: n.timestamp,
@@ -49,7 +51,9 @@ async function filterNews(news: News[]): Promise<News[]> {
 }
 
 async function sendNewsToTelegram(news: News[]): Promise<boolean> {
-  return Boolean(news);
+  const text = news.map((n) => n.text).join("\n\n");
+  const success = await sendMessage(text);
+  return success;
 }
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
@@ -70,6 +74,12 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
     if (filteredNews && filteredNews.length) {
       await saveBitcoinNews(filteredNews);
+      const success = await sendNewsToTelegram(filteredNews);
+      if (success) {
+        console.log("Successfully sent fresh news to registered chats");
+      } else {
+        console.log("Error sending news to registered chats");
+      }
     }
 
     res.statusCode = 200;
