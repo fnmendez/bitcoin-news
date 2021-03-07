@@ -4,7 +4,7 @@ import moment from "moment";
 import { News } from "~/src/types";
 
 type Instruction = {
-  links: { name: string; url: string }[];
+  links: { name: string; url: string; keywords: ["bitcoin"] }[];
   cheerioProcess: any;
 };
 
@@ -13,9 +13,10 @@ export const CNBC: Instruction = {
     {
       name: "GOOGLE:BITCOIN:6h",
       url: "https://news.google.com/search?q=bitcoin%20when%3A6h&hl=en-US&gl=US&ceid=US%3Aen",
+      keywords: ["bitcoin"],
     },
   ],
-  cheerioProcess: (html: string): News[] => {
+  cheerioProcess: (html: string, keywords: string[]): News[] => {
     const news: News[] = [];
     const $ = cheerio.load(html);
     $("h3").each(function (this: any) {
@@ -30,6 +31,7 @@ export const CNBC: Instruction = {
         publishedAt: time ? moment(time).format("dddd D MMMM, HH:mm:ss") : "?",
         timestamp: time ? new Date(time).getTime() : NaN,
         text: `${title}\n${sourceName}\n${sourceUrl}\n${moment(time).format("dddd D MMMM, HH:mm:ss")}`,
+        keywords,
       });
     });
     return news;
