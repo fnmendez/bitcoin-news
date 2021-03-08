@@ -3,7 +3,7 @@ import dedent from "dedent";
 import moment from "moment";
 
 import { News } from "~/src/types";
-import { SAFE_HTML as SH } from "~/src/utils";
+import { DATABASE_TIME, HUMAN_TIME, SAFE_HTML as SH, TIMESTAMP } from "~/src/utils";
 
 type Instruction = {
   links: { name: string; url: string; keywords: ["bitcoin"] }[];
@@ -26,14 +26,14 @@ export const CNBC: Instruction = {
       const sourceName = $(this).next("div").next("div").children("div").children("a").text().trim();
       const sourceUrl = `https://news.google.com${$(this).children("a").attr("href")?.slice(1)}`;
       const time = $(this).next("div").next("div").children("div").children("time").attr("datetime");
-      const humanTime = moment(time).format("YYYY/MM/DD, HH:mm:ss");
+      const humanTime = HUMAN_TIME(time);
       if (title.match(/(Bitcoin|bitcoin|BTC|btc)/g)) {
         news.push({
           title,
           sourceName,
           link: sourceUrl,
-          publishedAt: time ? moment(time).format("dddd D MMMM, HH:mm:ss") : "?",
-          timestamp: time ? new Date(time).getTime() : NaN,
+          publishedAt: DATABASE_TIME(time),
+          timestamp: TIMESTAMP(time),
           text: dedent`
           <b>${SH(title)}</b>
           ${SH(sourceName)}

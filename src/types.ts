@@ -8,4 +8,11 @@ export type News = {
   keywords: string[];
 };
 
-export type Tweet = { author: string; text: string; date: string; link: string };
+export type Tweet = {
+  author: string;
+  username: string;
+  text: string;
+  date: string;
+  link: string;
+  timestamp: number;
+};
