@@ -2,6 +2,7 @@ import axios from "axios";
 import qs from "qs";
 
 import { Tweet } from "~/src/types";
+import { TIMESTAMP } from "~/src/utils";
 
 const usernames = ["michael_saylor", "jack", "APompliano", "BTC_Archive", "DocumentingBTC"];
 
@@ -40,10 +41,13 @@ export const getRecentTweets = async (): Promise<Tweet[]> => {
       {},
     );
     const parsedTweets = tweets.map((tweet) => ({
+      ["id"]: tweet.id,
       ["author"]: userMap[tweet.author_id]["name"],
+      ["username"]: userMap[tweet.author_id]["username"],
       ["text"]: tweet.text,
       ["link"]: `https://twitter.com/${userMap[tweet.author_id]["username"]}/status/${tweet.id}`,
       ["date"]: tweet.created_at,
+      ["timestamp"]: TIMESTAMP(tweet.created_at),
     }));
 
     return parsedTweets;
