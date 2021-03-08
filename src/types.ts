@@ -7,3 +7,5 @@ export type News = {
   text: string;
   keywords: string[];
 };
+
+export type Tweet = { author: string; text: string; date: string; link: string };
