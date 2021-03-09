@@ -5,15 +5,15 @@ import { News } from "~/src/types";
 import { DATABASE_TIME, HUMAN_TIME, SAFE_HTML as SH, TIMESTAMP } from "~/src/utils";
 
 type Instruction = {
-  links: { name: string; url: string; keywords: ["bitcoin"] }[];
+  links: { name: string; url: string; keywords: string[] }[];
   cheerioProcess: any;
 };
 
-export const CNBC: Instruction = {
+export const GOOGLE_NEWS: Instruction = {
   links: [
     {
-      name: "GOOGLE:BITCOIN:6h",
-      url: "https://news.google.com/search?q=bitcoin%20when%3A6h&hl=en-US&gl=US&ceid=US%3Aen",
+      name: "GOOGLE:BITCOIN:1h",
+      url: "https://news.google.com/search?q=Bitcoin%20when%3A1h&hl=en-US&gl=US&ceid=US%3Aen",
       keywords: ["bitcoin"],
     },
   ],
