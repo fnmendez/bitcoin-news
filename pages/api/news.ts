@@ -10,7 +10,7 @@ import { sendMessage } from "~/libs/telegram";
 import { headers } from "~/src/constants";
 import * as instructions from "~/src/instructions";
 import { News } from "~/src/types";
-import { CHUNK_ARRAY } from "~/src/utils";
+import { CHUNK_ARRAY, SAFE_TITLE_KEY } from "~/src/utils";
 
 async function saveBitcoinNews(news: News[]) {
   const batches = CHUNK_ARRAY(news, 25);
@@ -34,10 +34,10 @@ async function saveBitcoinNews(news: News[]) {
     };
     const paramsTitle = {
       RequestItems: {
-        "bitcoin-news-title": batch.map((n) => ({
+        "bitcoin-news-titles": batch.map((n) => ({
           PutRequest: {
             Item: {
-              title: n.title.substr(0, 330),
+              title: SAFE_TITLE_KEY(n.title),
               source_url: n.link,
               keywords: n.keywords,
               source_name: n.sourceName,
@@ -55,6 +55,7 @@ async function saveBitcoinNews(news: News[]) {
 }
 
 async function getBitcoinNewsByLink(news: News[]) {
+  if (!news?.length) return [];
   const params = {
     RequestItems: {
       "bitcoin-news": {
@@ -67,10 +68,11 @@ async function getBitcoinNewsByLink(news: News[]) {
 }
 
 async function getBitcoinNewsByTitle(news: News[]) {
+  if (!news?.length) return [];
   const params = {
     RequestItems: {
       "bitcoin-news-titles": {
-        Keys: news.map((n) => ({ ["title"]: n.title })),
+        Keys: news.map((n) => ({ ["title"]: SAFE_TITLE_KEY(n.title) })),
       },
     },
   };
