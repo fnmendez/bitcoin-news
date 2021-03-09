@@ -1,6 +1,5 @@
 import cheerio from "cheerio";
 import dedent from "dedent";
-import moment from "moment";
 
 import { News } from "~/src/types";
 import { DATABASE_TIME, HUMAN_TIME, SAFE_HTML as SH, TIMESTAMP } from "~/src/utils";
