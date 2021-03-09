@@ -45,7 +45,7 @@ async function getBitcoinNews(news: News[]) {
 
 async function filterNews(news: News[]): Promise<News[]> {
   const alreadyStoredNewsLinks = (await getBitcoinNews(news)).map((n) => n["source_url"]);
-  const filtered = news.filter((n) => !alreadyStoredNewsLinks?.includes(n.link));
+  const filtered = news.filter((n) => !alreadyStoredNewsLinks.includes(n.link));
   console.log(`got: ${news.length}\nfresh: ${filtered.length}`);
   return filtered;
 }
@@ -58,7 +58,7 @@ async function sendNewsToTelegram(news: News[]): Promise<boolean> {
     const text = batch.map((n) => n.text).join("\n\n");
     const ok = await sendMessage(text);
     success = success && ok;
-    await new Promise((r) => setTimeout(r, 800));
+    await new Promise((r) => setTimeout(r, 1000));
   }
   return success;
 }
