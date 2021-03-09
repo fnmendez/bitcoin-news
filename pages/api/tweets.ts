@@ -1,14 +1,13 @@
-import axios from "axios";
 import { NextApiRequest, NextApiResponse } from "next";
 
 import * as dynamodb from "~/libs/dynamodb";
 import { sendMessage } from "~/libs/telegram";
-import { headers } from "~/src/constants";
-import * as instructions from "~/src/instructions";
+import { getRecentTweets, tweetToMessage } from "~/libs/twitter";
 import { Tweet } from "~/src/types";
 import { CHUNK_ARRAY } from "~/src/utils";
 
 async function saveTweets(tweets: Tweet[]) {
+  console.log("in saveTweets");
   const batches = CHUNK_ARRAY(tweets, 25);
   for (const batch of batches) {
     const params = {
@@ -16,7 +15,7 @@ async function saveTweets(tweets: Tweet[]) {
         "bitcoin-tweets": batch.map((t) => ({
           PutRequest: {
             Item: {
-              tweet_id: t.id,
+              tweet_id: t.tweet_id,
               link: t.link,
               text: t.text,
               author: t.author,
@@ -32,11 +31,13 @@ async function saveTweets(tweets: Tweet[]) {
   }
 }
 
-async function getTweets(tweets: Tweet[]) {
+async function getTweets(tweetIds: string[]) {
+  console.log("in getTweets");
+  console.log(tweetIds);
   const params = {
     RequestItems: {
       "bitcoin-tweets": {
-        Keys: tweets.map((n) => ({ ["tweet_id"]: n.link })),
+        Keys: tweetIds.map((tweetId) => ({ ["tweet_id"]: tweetId })),
       },
     },
   };
@@ -44,50 +45,51 @@ async function getTweets(tweets: Tweet[]) {
   return res.Responses?.["bitcoin-tweets"] || [];
 }
 
-async function filterTweet(tweets: Tweet[]): Promise<Tweet[]> {
-  const alreadyStoredTweetLinks = (await getTweets(tweets)).map((n) => n["source_url"]);
-  const filtered = tweets.filter((n) => !alreadyStoredTweetLinks?.includes(n.link));
+async function filterTweets(tweets: Tweet[]): Promise<Tweet[]> {
+  console.log("in filterTweets");
+  console.log(tweets);
+  const alreadyStoredTweetsIds = (await getTweets(tweets.map((t) => t["tweet_id"]))).map((t) => t["tweet_id"]);
+  const filtered = tweets.filter((t) => !alreadyStoredTweetsIds.includes(t["tweet_id"]));
   console.log(`got: ${tweets.length}\nfresh: ${filtered.length}`);
   return filtered;
 }
 
-async function sendTweetToTelegram(tweets: Tweet[]): Promise<boolean> {
-  const ordered = tweets.sort((a, b) => a.timestamp - b.timestamp);
-  const batches = CHUNK_ARRAY(ordered, 8);
+async function sendTweetsToTelegram(tweets: Tweet[]): Promise<boolean> {
+  console.log("in sendTweetsToTelegram");
   let success = true;
-  for (const batch of batches) {
-    const text = batch.map((n) => n.text).join("\n\n");
-    const ok = await sendMessage(text);
+  for (const tweet of tweets) {
+    const tweetMessage = tweetToMessage(tweet);
+    const ok = await sendMessage(tweetMessage);
     success = success && ok;
-    await new Promise((r) => setTimeout(r, 800));
+    await new Promise((r) => setTimeout(r, 1000));
   }
   return success;
 }
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+  console.log("in handler");
   try {
-    let tweets: Tweet[] = [];
+    const recentTweets: Tweet[] = await getRecentTweets();
 
-    for (const sourceOfTweet of Object.values(instructions)) {
-      let newsFromSource: Tweet[] = [];
-      for (const link of sourceOfTweet.links) {
-        const { data: html } = await axios.get(link.url, { headers });
-        const newsFromLink = sourceOfTweet.cheerioProcess(html);
-        newsFromSource = [...newsFromSource, ...newsFromLink];
-      }
-      tweets = [...tweets, ...newsFromSource];
-    }
-
-    const filteredTweet = await filterTweet(tweets);
+    const filteredTweet = await filterTweets(recentTweets);
 
     if (filteredTweet && filteredTweet.length) {
       await saveTweets(filteredTweet);
-      const success = await sendTweetToTelegram(filteredTweet);
-      if (success) {
-        console.log("Successfully sent fresh tweets to registered chats");
-      } else {
-        console.log("Error sending tweets to registered chats");
-      }
+      // const success = await sendTweetsToTelegram(filteredTweet);
+      // if (success) {
+      //   console.log("Successfully sent fresh tweets to registered chats");
+      // } else {
+      //   console.log("Error sending tweets to registered chats");
+      // }
+      res.statusCode = 200;
+      res.setHeader("Content-Type", "application/json");
+      return res.end(
+        JSON.stringify(
+          filteredTweet.map((tweet) => tweetToMessage(tweet)),
+          null,
+          2,
+        ),
+      );
     }
 
     res.statusCode = 200;
