@@ -21,3 +21,5 @@ export const DATABASE_TIME = (time: string | undefined): string =>
   time ? moment(time).format("dddd D MMMM, HH:mm:ss") : "?";
 
 export const TIMESTAMP = (time: string | undefined): number => (time ? new Date(time).getTime() : new Date().getTime()); // fake
+
+export const SAFE_TITLE_KEY = (key: string) => key.substr(0, 330);
