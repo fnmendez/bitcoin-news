@@ -20,4 +20,4 @@ export const HUMAN_TIME = (time: string | undefined): string =>
 export const DATABASE_TIME = (time: string | undefined): string =>
   time ? moment(time).format("dddd D MMMM, HH:mm:ss") : "?";
 
-export const TIMESTAMP = (time: string | undefined): number => (time ? new Date(time).getTime() : NaN);
+export const TIMESTAMP = (time: string | undefined): number => (time ? new Date(time).getTime() : new Date().getTime()); // fake
