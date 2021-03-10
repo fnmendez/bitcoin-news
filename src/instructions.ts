@@ -42,7 +42,7 @@ export const GOOGLE_NEWS: Instruction = {
           text: dedent`
           <b>${SH(title)}</b>
           ${SH(sourceName)}
-          ${SH(humanTime)} - <a href='https://bitcoin.francomendez.com/api/redirect?url=${sourceUrl}'>Read more</a>`,
+          ${SH(humanTime)} - <a href='${sourceUrl}'>Read more</a>`,
           keywords,
         });
       }
