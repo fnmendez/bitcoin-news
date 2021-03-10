@@ -8,6 +8,9 @@ import { HUMAN_TIME, TIMESTAMP } from "~/src/utils";
 
 const bearer = process.env.TWITTER_BEARER_TOKEN;
 
+// https://developer.twitter.com/en/docs/twitter-api/tweets/search/api-reference/get-tweets-search-recent
+// https://developer.twitter.com/en/docs/twitter-api/tweets/search/integrate/build-a-query
+
 const usernames = [
   "michael_saylor",
   "jack",
@@ -47,6 +50,9 @@ export const getRecentTweets = async (): Promise<Tweet[]> => {
         ["start_time"]: startTime.format(),
       })}`,
     );
+    if (!res?.data?.data || !res.data.includes?.users) {
+      return [];
+    }
     const {
       data: tweets,
       includes: { users },
@@ -77,7 +83,7 @@ export const getRecentTweets = async (): Promise<Tweet[]> => {
 
 export const tweetToMessage = (tweet: Tweet): string => {
   const message = dedent`
-    <b>${tweet.author}</b>
+    <b>${tweet.author}</b> @${tweet.username}
     ${tweet.text}
     ${HUMAN_TIME(tweet.date, -3)} - <a href='${tweet.link}'>See on Twitter</a>
   `;
