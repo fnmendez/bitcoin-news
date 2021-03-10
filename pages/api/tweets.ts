@@ -7,7 +7,6 @@ import { Tweet } from "~/src/types";
 import { CHUNK_ARRAY } from "~/src/utils";
 
 async function saveTweets(tweets: Tweet[]) {
-  console.log("in saveTweets");
   const batches = CHUNK_ARRAY(tweets, 25);
   for (const batch of batches) {
     const params = {
@@ -32,8 +31,6 @@ async function saveTweets(tweets: Tweet[]) {
 }
 
 async function getTweets(tweetIds: string[]) {
-  console.log("in getTweets");
-  console.log(tweetIds);
   const params = {
     RequestItems: {
       "bitcoin-tweets": {
@@ -46,8 +43,6 @@ async function getTweets(tweetIds: string[]) {
 }
 
 async function filterTweets(tweets: Tweet[]): Promise<Tweet[]> {
-  console.log("in filterTweets");
-  console.log(tweets);
   const alreadyStoredTweetsIds = (await getTweets(tweets.map((t) => t["tweet_id"]))).map((t) => t["tweet_id"]);
   const filtered = tweets.filter((t) => !alreadyStoredTweetsIds.includes(t["tweet_id"]));
   console.log(`got: ${tweets.length}\nfresh: ${filtered.length}`);
@@ -55,11 +50,10 @@ async function filterTweets(tweets: Tweet[]): Promise<Tweet[]> {
 }
 
 async function sendTweetsToTelegram(tweets: Tweet[]): Promise<boolean> {
-  console.log("in sendTweetsToTelegram");
   let success = true;
   for (const tweet of tweets) {
     const tweetMessage = tweetToMessage(tweet);
-    const ok = await sendMessage(tweetMessage);
+    const ok = await sendMessage(tweetMessage, true);
     success = success && ok;
     await new Promise((r) => setTimeout(r, 1000));
   }
@@ -67,7 +61,6 @@ async function sendTweetsToTelegram(tweets: Tweet[]): Promise<boolean> {
 }
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
-  console.log("in handler");
   try {
     const recentTweets: Tweet[] = await getRecentTweets();
 
@@ -75,21 +68,12 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
     if (filteredTweet && filteredTweet.length) {
       await saveTweets(filteredTweet);
-      // const success = await sendTweetsToTelegram(filteredTweet);
-      // if (success) {
-      //   console.log("Successfully sent fresh tweets to registered chats");
-      // } else {
-      //   console.log("Error sending tweets to registered chats");
-      // }
-      res.statusCode = 200;
-      res.setHeader("Content-Type", "application/json");
-      return res.end(
-        JSON.stringify(
-          filteredTweet.map((tweet) => tweetToMessage(tweet)),
-          null,
-          2,
-        ),
-      );
+      const success = await sendTweetsToTelegram(filteredTweet);
+      if (success) {
+        console.log("Successfully sent fresh tweets to registered chats");
+      } else {
+        console.log("Error sending tweets to registered chats");
+      }
     }
 
     res.statusCode = 200;
