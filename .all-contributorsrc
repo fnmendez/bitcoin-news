@@ -1,0 +1,27 @@
+{
+  "files": [
+    "README.md"
+  ],
+  "imageSize": 100,
+  "commit": false,
+  "contributors": [
+    {
+      "login": "fnmendez",
+      "name": "Franco Méndez Z.",
+      "avatar_url": "https://avatars.githubusercontent.com/u/20799436?v=4",
+      "profile": "https://github.com/fnmendez",
+      "contributions": [
+        "code",
+        "financial",
+        "ideas",
+        "review"
+      ]
+    }
+  ],
+  "contributorsPerLine": 7,
+  "projectName": "bitcoin-news",
+  "projectOwner": "fnmendez",
+  "repoType": "github",
+  "repoHost": "https://github.com",
+  "skipCi": true
+}
