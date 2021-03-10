@@ -4,9 +4,9 @@ import dedent from "dedent";
 import { News } from "~/src/types";
 import { DATABASE_TIME, HUMAN_TIME, SAFE_HTML as SH, TIMESTAMP } from "~/src/utils";
 
-const sourceNameBlacklist = ['CoinGeek']
+const sourceNameBlacklist = ["CoinGeek"];
 
-function blacklistedSource(sourceName) {
+function blacklistedSource(sourceName: string) {
   return sourceNameBlacklist.includes(sourceName);
 }
 
