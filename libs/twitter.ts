@@ -1,9 +1,10 @@
 import axios from "axios";
+import dedent from "dedent";
 import moment from "moment";
 import qs from "qs";
 
 import { Tweet } from "~/src/types";
-import { TIMESTAMP } from "~/src/utils";
+import { HUMAN_TIME, TIMESTAMP } from "~/src/utils";
 
 const usernames = [
   "michael_saylor",
@@ -74,6 +75,10 @@ export const getRecentTweets = async (): Promise<Tweet[]> => {
 };
 
 export const tweetToMessage = (tweet: Tweet): string => {
-  const message = `<a href='${tweet.link}'>See on Twitter</a>`;
+  const message = dedent`
+    <b>${tweet.author}</b>
+    ${tweet.text}
+    ${HUMAN_TIME(tweet.date, -3)} - <a href='${tweet.link}'>See on Twitter</a>
+  `;
   return message;
 };
