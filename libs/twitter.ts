@@ -46,7 +46,7 @@ export const getRecentTweets = async (): Promise<Tweet[]> => {
         ["tweet.fields"]: "created_at",
         ["expansions"]: "author_id",
         ["user.fields"]: "created_at",
-        ["max_results"]: "15",
+        ["max_results"]: "50",
         ["start_time"]: startTime.format(),
       })}`,
     );
