@@ -7,8 +7,9 @@ import { Tweet } from "~/src/types";
 import { HUMAN_TIME, TIMESTAMP } from "~/src/utils";
 
 const bearer = process.env.TWITTER_BEARER_TOKEN;
-console.log("bearer");
-console.log(bearer);
+if (!bearer) {
+  throw new Error("Missing bearer token");
+}
 
 // https://developer.twitter.com/en/docs/twitter-api/tweets/search/api-reference/get-tweets-search-recent
 // https://developer.twitter.com/en/docs/twitter-api/tweets/search/integrate/build-a-query
