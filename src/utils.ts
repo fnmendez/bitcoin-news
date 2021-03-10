@@ -14,8 +14,12 @@ export const SAFE_HTML = (text: string) => {
   return text.replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/&/g, "&amp;");
 };
 
-export const HUMAN_TIME = (time: string | undefined): string =>
-  time ? moment(time).format("YYYY/MM/DD, HH:mm:ss") : "?";
+export const HUMAN_TIME = (time: string | undefined, td?: number): string => {
+  if (!time) return "?";
+  const datetime = moment(time);
+  if (td) datetime.add(td, "hours");
+  return datetime.format("YYYY/MM/DD, HH:mm:ss");
+};
 
 export const DATABASE_TIME = (time: string | undefined): string =>
   time ? moment(time).format("dddd D MMMM, HH:mm:ss") : "?";
