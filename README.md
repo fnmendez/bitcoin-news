@@ -1,10 +1,10 @@
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
 [![All Contributors](https://img.shields.io/badge/all_contributors-1-orange.svg?style=flat-square)](#contributors-)
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
-[![commitsB]][commitsL] [![prettierB]][prettierL]
 # ₿otcoin 🤖🚀🌕
 
 Sends live news about Bitcoin to Telegram (news, tweets, and public documents).
+
 Wanna join the group chat? Send me a message [here](https://t.me/fnmendez).
 
 Donate for database invoice? [Buy me a coffee](https://www.buymeacoffee.com/francomendez) :coffee:
@@ -29,11 +29,3 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
 This project follows the [all-contributors](https://github.com/all-contributors/all-contributors) specification. **One commit and you're in!**
 
 Stack sats
-
-<!-- BADGES -->
-[commitsB]:https://img.shields.io/badge/commits-conventional%20-blue.svg
-[commitsL]:https://conventionalcommits.org
-
-[prettierB]:https://img.shields.io/badge/code_style-prettier-ff69b4.svg?style=flat-square
-[prettierL]:https://github.com/prettier/prettier
-<!-- END BADGES -->
