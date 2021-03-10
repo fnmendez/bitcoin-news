@@ -5,9 +5,7 @@ const chatIds = ["-1001407421921"];
 
 const client = axios.create({
   baseURL: `https://api.telegram.org/bot${token}`,
-  headers: {
-    ["content-type"]: "application/json",
-  },
+  headers: { ["content-type"]: "application/json" },
 });
 
 export const sendMessage = async (text: string, preview = false) => {
