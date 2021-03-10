@@ -17,3 +17,19 @@ export type Tweet = {
   link: string;
   timestamp: number;
 };
+
+export type OverallResult = {
+  disclosed: number;
+  quiet: number;
+  error: number;
+  total: number;
+};
+
+export type CompanySearch = {
+  name: string;
+  url: string;
+};
+
+export type CompanyStatus = "disclosed" | "quiet" | "error";
+
+export type CompanyResult = CompanySearch & { status: CompanyStatus };
