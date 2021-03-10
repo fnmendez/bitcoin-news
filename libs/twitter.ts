@@ -14,6 +14,7 @@ const usernames = [
   "Bloqport",
   "danheld",
   "saifedean",
+  "elonmusk",
 ];
 const query = `(-is:reply -is:retweet (${usernames.map((u) => `from:${u}`).join(" OR ")})) OR (from:whale_alert #BTC)`;
 
