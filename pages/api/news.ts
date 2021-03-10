@@ -102,7 +102,7 @@ async function sendNewsToTelegram(news: News[]): Promise<boolean> {
     const text = batch.map((n) => n.text).join("\n\n");
     const ok = await sendMessage(text);
     success = success && ok;
-    await new Promise((r) => setTimeout(r, 1000));
+    await new Promise((r) => setTimeout(r, 2000));
   }
   return success;
 }
