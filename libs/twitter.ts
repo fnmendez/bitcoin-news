@@ -3,13 +3,11 @@ import dedent from "dedent";
 import moment from "moment";
 import qs from "qs";
 
+import { headers } from "~/src/constants";
 import { Tweet } from "~/src/types";
 import { HUMAN_TIME, TIMESTAMP } from "~/src/utils";
 
 const bearer = process.env.TWITTER_BEARER_TOKEN;
-if (!bearer) {
-  throw new Error("Missing bearer token");
-}
 
 // https://developer.twitter.com/en/docs/twitter-api/tweets/search/api-reference/get-tweets-search-recent
 // https://developer.twitter.com/en/docs/twitter-api/tweets/search/integrate/build-a-query
@@ -30,7 +28,7 @@ const query = `(-is:reply -is:retweet (${usernames.map((u) => `from:${u}`).join(
 
 const client = axios.create({
   baseURL: `https://api.twitter.com/2`,
-  headers: { ["authorization"]: `Bearer ${bearer}` },
+  headers: { ["authorization"]: `Bearer ${bearer}`, ...headers },
 });
 
 type TweetsSearchRecentResponse = {
@@ -87,7 +85,7 @@ export const getRecentTweets = async (): Promise<Tweet[]> => {
 export const tweetToMessage = (tweet: Tweet): string => {
   const message = dedent`
     <b>${tweet.author}</b> @${tweet.username}
-    ${tweet.text}
+    ${tweet.text.replace(/\n\n/g, "\n")}
     ${HUMAN_TIME(tweet.date, -3)} - <a href='${tweet.link}'>See on Twitter</a>
   `;
   return message;
