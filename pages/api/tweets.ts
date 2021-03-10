@@ -59,7 +59,8 @@ async function sendTweetsToTelegram(tweets: Tweet[]): Promise<boolean> {
     const text = batch.map((t) => tweetToMessage(t)).join("\n\n");
     const ok = await sendMessage(text, false);
     success = success && ok;
-    await new Promise((r) => setTimeout(r, 2000));
+    await saveTweets(batch);
+    await new Promise((r) => setTimeout(r, 800));
   }
   return success;
 }
@@ -71,12 +72,12 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     const filteredTweets = await filterTweets(recentTweets);
 
     if (filteredTweets && filteredTweets.length) {
-      await saveTweets(filteredTweets);
       const success = await sendTweetsToTelegram(filteredTweets);
       if (success) {
         console.log("Successfully sent fresh tweets to registered chats");
       } else {
         console.log("Error sending tweets to registered chats");
+        throw new Error("Error sending tweets to registered chats");
       }
     }
 
