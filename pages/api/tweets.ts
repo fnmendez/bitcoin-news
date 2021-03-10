@@ -53,7 +53,7 @@ async function sendTweetsToTelegram(tweets: Tweet[]): Promise<boolean> {
   let success = true;
   for (const tweet of tweets) {
     const tweetMessage = tweetToMessage(tweet);
-    const ok = await sendMessage(tweetMessage, true);
+    const ok = await sendMessage(tweetMessage, false);
     success = success && ok;
     await new Promise((r) => setTimeout(r, 1000));
   }
