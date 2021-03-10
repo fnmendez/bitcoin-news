@@ -91,18 +91,6 @@ async function filterNews(news: News[]): Promise<News[]> {
     link filter: ${filteredByLink.length}
     title filter: ${filteredByTitleAndLink.length}
     `);
-  console.log("\n\nall");
-  for (const n of news) {
-    console.log(`${n.title}\n${n.sourceName}`);
-  }
-  console.log("\n\nby link");
-  for (const f of filteredByLink) {
-    console.log(`${f.title}\n${f.sourceName}`);
-  }
-  console.log("\n\nby title");
-  for (const t of filteredByTitleAndLink) {
-    console.log(`${t.title}\n${t.sourceName}`);
-  }
 
   return filteredByTitleAndLink;
 }
