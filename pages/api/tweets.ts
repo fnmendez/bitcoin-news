@@ -7,6 +7,7 @@ import { Tweet } from "~/src/types";
 import { CHUNK_ARRAY } from "~/src/utils";
 
 async function saveTweets(tweets: Tweet[]) {
+  if (!tweets?.length) return;
   const batches = CHUNK_ARRAY(tweets, 25);
   for (const batch of batches) {
     const params = {
@@ -31,6 +32,7 @@ async function saveTweets(tweets: Tweet[]) {
 }
 
 async function getTweets(tweetIds: string[]) {
+  if (!tweetIds) return [];
   const params = {
     RequestItems: {
       "bitcoin-tweets": {
@@ -64,11 +66,11 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   try {
     const recentTweets: Tweet[] = await getRecentTweets();
 
-    const filteredTweet = await filterTweets(recentTweets);
+    const filteredTweets = await filterTweets(recentTweets);
 
-    if (filteredTweet && filteredTweet.length) {
-      await saveTweets(filteredTweet);
-      const success = await sendTweetsToTelegram(filteredTweet);
+    if (filteredTweets && filteredTweets.length) {
+      await saveTweets(filteredTweets);
+      const success = await sendTweetsToTelegram(filteredTweets);
       if (success) {
         console.log("Successfully sent fresh tweets to registered chats");
       } else {

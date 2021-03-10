@@ -13,6 +13,7 @@ import { News } from "~/src/types";
 import { CHUNK_ARRAY, SAFE_TITLE_KEY } from "~/src/utils";
 
 async function saveBitcoinNews(news: News[]) {
+  if (!news?.length) return;
   const batches = CHUNK_ARRAY(news, 25);
   const promises: Promise<PromiseResult<DocumentClient.BatchWriteItemOutput, AWSError>>[] = [];
   for (const batch of batches) {
