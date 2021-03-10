@@ -4,6 +4,12 @@ import dedent from "dedent";
 import { News } from "~/src/types";
 import { DATABASE_TIME, HUMAN_TIME, SAFE_HTML as SH, TIMESTAMP } from "~/src/utils";
 
+const sourceNameBlacklist = ['CoinGeek']
+
+function blacklistedSource(sourceName) {
+  return sourceNameBlacklist.includes(sourceName);
+}
+
 type Instruction = {
   links: { name: string; url: string; keywords: string[] }[];
   cheerioProcess: any;
@@ -26,7 +32,7 @@ export const GOOGLE_NEWS: Instruction = {
       const sourceUrl = `https://news.google.com${$(this).children("a").attr("href")?.slice(1)}`;
       const time = $(this).next("div").next("div").children("div").children("time").attr("datetime");
       const humanTime = HUMAN_TIME(time, -3);
-      if (title.match(/(Bitcoin|bitcoin|BTC|btc)/g)) {
+      if (title.match(/(Bitcoin|bitcoin|BTC|btc)/g) && !blacklistedSource(sourceName)) {
         news.push({
           title,
           sourceName,
