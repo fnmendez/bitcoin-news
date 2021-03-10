@@ -10,14 +10,14 @@ const client = axios.create({
   },
 });
 
-export const sendMessage = async (text: string) => {
+export const sendMessage = async (text: string, preview = false) => {
   let sentMessages = 0;
   for (const chatId of chatIds) {
     const message = await client.post("sendMessage", {
       chat_id: chatId,
       text,
       parse_mode: "HTML",
-      disable_web_page_preview: true,
+      disable_web_page_preview: !preview,
     });
     if (message) sentMessages += 1;
   }
