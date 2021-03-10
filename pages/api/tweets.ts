@@ -32,7 +32,7 @@ async function saveTweets(tweets: Tweet[]) {
 }
 
 async function getTweets(tweetIds: string[]) {
-  if (!tweetIds) return [];
+  if (!tweetIds?.length) return [];
   const params = {
     RequestItems: {
       "bitcoin-tweets": {
