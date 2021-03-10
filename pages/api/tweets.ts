@@ -52,12 +52,14 @@ async function filterTweets(tweets: Tweet[]): Promise<Tweet[]> {
 }
 
 async function sendTweetsToTelegram(tweets: Tweet[]): Promise<boolean> {
+  const ordered = tweets.sort((a, b) => a.timestamp - b.timestamp);
+  const batches = CHUNK_ARRAY(ordered, 4);
   let success = true;
-  for (const tweet of tweets) {
-    const tweetMessage = tweetToMessage(tweet);
-    const ok = await sendMessage(tweetMessage, false);
+  for (const batch of batches) {
+    const text = batch.map((t) => tweetToMessage(t)).join("\n\n");
+    const ok = await sendMessage(text, false);
     success = success && ok;
-    await new Promise((r) => setTimeout(r, 1000));
+    await new Promise((r) => setTimeout(r, 2000));
   }
   return success;
 }
