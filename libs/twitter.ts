@@ -1,12 +1,21 @@
 import axios from "axios";
-import dedent from "dedent";
 import moment from "moment";
 import qs from "qs";
 
 import { Tweet } from "~/src/types";
 import { TIMESTAMP } from "~/src/utils";
 
-const usernames = ["michael_saylor", "jack", "APompliano", "BTC_Archive", "DocumentingBTC", "_francomendez"];
+const usernames = [
+  "michael_saylor",
+  "jack",
+  "APompliano",
+  "BTC_Archive",
+  "DocumentingBTC",
+  "Bloqport",
+  "danheld",
+  "saifedean",
+];
+const query = `(-is:reply -is:retweet (${usernames.map((u) => `from:${u}`).join(" OR ")})) OR (from:whale_alert #BTC)`;
 
 const bearer =
   "AAAAAAAAAAAAAAAAAAAAAGnCNQEAAAAAMgPuzRN2bItHVM%2BkoIT%2FtDAsBAA%3DANuSy5zBTcsMZPuIVyPEDlGj2vxXvWqzW2VIgxHZBNoTVMqzOw";
@@ -23,15 +32,15 @@ type TweetsSearchRecentResponse = {
 
 export const getRecentTweets = async (): Promise<Tweet[]> => {
   const startTime = moment();
-  startTime.add(-6, "hours");
+  startTime.add(-1, "hours");
   try {
     const res = await client.get(
       `tweets/search/recent?${qs.stringify({
-        ["query"]: usernames.map((u) => `from:${u}`).join(" OR "),
+        ["query"]: query,
         ["tweet.fields"]: "created_at",
         ["expansions"]: "author_id",
         ["user.fields"]: "created_at",
-        ["max_results"]: "24",
+        ["max_results"]: "15",
         ["start_time"]: startTime.format(),
       })}`,
     );
@@ -64,10 +73,6 @@ export const getRecentTweets = async (): Promise<Tweet[]> => {
 };
 
 export const tweetToMessage = (tweet: Tweet): string => {
-  const message = dedent`
-    <b>${tweet.author}</b>
-    ${tweet.text}
-    ${tweet.date} - <a href='${tweet.link}'>See on Twitter</a>
-  `;
+  const message = `<a href='${tweet.link}'>See on Twitter</a>`;
   return message;
 };
