@@ -1,10 +1,12 @@
 import aws from "aws-sdk";
 
-const client = new aws.DynamoDB.DocumentClient({
-  accessKeyId: "AKIA2PM5XP6RVOLMLJ66",
-  secretAccessKey: "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",
+aws.config.update({
+  accessKeyId: process.env.AWS_ACCESS_KEY_ID_BOTCOIN,
+  secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY_BOTCOIN,
   region: "us-east-1",
 });
+
+const client = new aws.DynamoDB.DocumentClient();
 
 export type AttributeMap = aws.DynamoDB.DocumentClient.AttributeMap;
 export type GetItemOutput = aws.DynamoDB.DocumentClient.GetItemOutput;
