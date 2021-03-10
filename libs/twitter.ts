@@ -6,6 +6,8 @@ import qs from "qs";
 import { Tweet } from "~/src/types";
 import { HUMAN_TIME, TIMESTAMP } from "~/src/utils";
 
+const bearer = process.env.TWITTER_BEARER_TOKEN;
+
 const usernames = [
   "michael_saylor",
   "jack",
@@ -20,8 +22,6 @@ const usernames = [
 const custom = ["from:whale_alert #BTC", "from:zerohedge bitcoin"];
 const query = `(-is:reply -is:retweet (${usernames.map((u) => `from:${u}`).join(" OR ")})) OR ${custom.join(" OR ")}`;
 
-const bearer =
-  "AAAAAAAAAAAAAAAAAAAAAGnCNQEAAAAAMgPuzRN2bItHVM%2BkoIT%2FtDAsBAA%3DANuSy5zBTcsMZPuIVyPEDlGj2vxXvWqzW2VIgxHZBNoTVMqzOw";
 const client = axios.create({
   baseURL: `https://api.twitter.com/2`,
   headers: { ["authorization"]: `Bearer ${bearer}` },
