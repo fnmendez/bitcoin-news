@@ -9,7 +9,7 @@ This is a Telegram bot that send information about Bitcoin (news, tweets, and pu
 
 Wanna help me with the database invoice? [Buy me a coffee](https://www.buymeacoffee.com/francomendez) :coffee:
 
-**Any contribution will make you appear here below :)**
+**Any contribution will make you appear here below** :smile:
 
 <!-- Badges -->
 

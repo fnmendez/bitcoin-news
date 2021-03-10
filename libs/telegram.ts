@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const token = "1500529848:AAEhZp_IpYbrjGzOnbPBf1scLOZxdH_VB1g";
+const token = process.env.TELEGRAM_TOKEN;
 const chatIds = ["-1001407421921"];
 
 const client = axios.create({
