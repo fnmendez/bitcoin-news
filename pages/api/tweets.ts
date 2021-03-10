@@ -53,7 +53,7 @@ async function filterTweets(tweets: Tweet[]): Promise<Tweet[]> {
 
 async function sendTweetsToTelegram(tweets: Tweet[]): Promise<boolean> {
   const ordered = tweets.sort((a, b) => a.timestamp - b.timestamp);
-  const batches = CHUNK_ARRAY(ordered, 2);
+  const batches = CHUNK_ARRAY(ordered, 3);
   let success = true;
   for (const batch of batches) {
     const text = batch.map((t) => tweetToMessage(t)).join("\n\n");
