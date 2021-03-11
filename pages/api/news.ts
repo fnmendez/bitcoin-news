@@ -10,7 +10,7 @@ import { sendMessage } from "~/libs/telegram";
 import { headers } from "~/src/constants";
 import * as instructions from "~/src/instructions";
 import { News } from "~/src/types";
-import { CHUNK_ARRAY, SAFE_TITLE_KEY } from "~/src/utils";
+import { CHUNK_ARRAY, SAFE_TITLE_KEY, SILENT_TIME } from "~/src/utils";
 
 async function saveBitcoinNews(news: News[]) {
   if (!news?.length) return;
@@ -98,10 +98,11 @@ async function filterNews(news: News[]): Promise<News[]> {
 async function sendNewsToTelegram(news: News[]): Promise<boolean> {
   const ordered = news.sort((a, b) => a.timestamp - b.timestamp);
   const batches = CHUNK_ARRAY(ordered, 8);
+  const silentMessage = SILENT_TIME();
   let success = true;
   for (const batch of batches) {
     const text = batch.map((n) => n.text).join("\n\n");
-    const ok = await sendMessage(text);
+    const ok = await sendMessage(text, false, silentMessage);
     success = success && ok;
     await new Promise((r) => setTimeout(r, 2000));
   }
