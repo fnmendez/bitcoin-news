@@ -3,7 +3,7 @@ import { NextApiRequest, NextApiResponse } from "next";
 import puppeteer from "puppeteer";
 
 import { sendMessage } from "~/libs/telegram";
-import { CompanyResult, CompanySearch, OverallResult, ResultToTextInput } from "~/src/types";
+import { CompanyResult, CompanySearch, ResultToTextInput } from "~/src/types";
 import { CHILE_TIME, CHUNK_ARRAY } from "~/src/utils";
 
 // companies at eof
