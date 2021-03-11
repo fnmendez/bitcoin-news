@@ -3,13 +3,13 @@ import { NextApiRequest, NextApiResponse } from "next";
 import puppeteer from "puppeteer";
 
 import { sendMessage } from "~/libs/telegram";
-import { CompanyResult, CompanySearch, OverallResult } from "~/src/types";
+import { CompanyResult, CompanySearch, OverallResult, ResultToTextInput } from "~/src/types";
 import { CHILE_TIME, CHUNK_ARRAY } from "~/src/utils";
 
 // companies at eof
 
-const TIMEOUT_FOR_EACH_RESULT = 800; // ms
-const CONCURRENCY = 3;
+const TIMEOUT_FOR_EACH_RESULT = 1200; // ms
+const CONCURRENCY = 2;
 
 const getSecEdgarResults = async ({ name, url }): Promise<CompanyResult> => {
   try {
@@ -40,36 +40,24 @@ const getSecEdgarResults = async ({ name, url }): Promise<CompanyResult> => {
 };
 
 const TEXTIFY = (c: CompanyResult) => `<a href='${c.url}'>${c.name}</a>`;
-const resultsToText = ({
-  overall,
-  cd,
-  cq,
-  ce,
-  shouldAlert,
-}: {
-  overall: OverallResult;
-  cd: CompanyResult[];
-  cq: CompanyResult[];
-  ce: CompanyResult[];
-  shouldAlert: boolean;
-}): string => {
+const resultsToText = ({ overall, cd, cq, ce, shouldAlert }: ResultToTextInput): string => {
   console.log("overall", overall);
   console.log("cd", cd);
   console.log("cq", cq);
   console.log("ce", ce);
   console.log("shouldAlert", shouldAlert);
   return dedent`
-    ${shouldAlert ? "🚨 ATTENTION 🚨" : ""}
+    ${shouldAlert ? "\xF0\x9F\x9A\xA8 ATTENTION \xF0\x9F\x9A\xA8 (read by yourself)" : ""}
 
     <a href='${known[0].url}'>SEC EDGAR CHECK</a>
-    🏆🏆 ${[...known.map(TEXTIFY), ...cd.map(TEXTIFY)].join(" ")}
-    ??? ${cq.length && cq.map(TEXTIFY).join(" ")}
+    \xF0\x9F\x8F\x86  ${[...known.map(TEXTIFY), ...cd.map(TEXTIFY)].join(" ")}
+    ??  ${cq.length && cq.map(TEXTIFY).join(" ")}
     err ${ce.length && ce.map(TEXTIFY).join(" ")}
 
-    🏆 = published docs with \`bitcoin\`
+    \xF0\x9F\x8F\x86 = found \`bitcoin\` in reports
     ${CHILE_TIME()} - SEC EDGAR</a>
 
-    ${shouldAlert ? "<b>* don't trust, verify *</b>" : ""}
+    ${shouldAlert ? "\xF0\x9F\x9A\xA8 ATTENTION \xF0\x9F\x9A\xA8 (read by yourself)" : ""}
   `.trim();
 };
 async function sendResultsToTelegram(companiesResults: CompanyResult[], overall: OverallResult) {
@@ -78,7 +66,7 @@ async function sendResultsToTelegram(companiesResults: CompanyResult[], overall:
   const companiesError = companiesResults.filter((cr) => cr.status === "error") || [];
 
   // SET ALERT MODE
-  const ALERT_ACTIVATED = Boolean(companiesDisclosed.length); // (recent disclosure)
+  const ALERT_ACTIVATED = Boolean(companiesDisclosed.length); // (unknown disclosure occurred)
 
   const text = resultsToText({
     overall,
@@ -89,13 +77,13 @@ async function sendResultsToTelegram(companiesResults: CompanyResult[], overall:
   });
   let success = false;
   if (ALERT_ACTIVATED) {
-    for (let i = 0; i < 10; i++) {
-      const ok = await sendMessage(text, false);
+    for (let i = 0; i < 3; i++) {
+      const ok = await sendMessage(text, false, false);
       success = success || ok;
-      await new Promise((r) => setTimeout(r, 1250));
+      await new Promise((r) => setTimeout(r, 1500));
     }
   } else {
-    success = await sendMessage(text, false);
+    success = await sendMessage(text, false, true);
   }
   if (!success) {
     throw new Error("Error sending message");
