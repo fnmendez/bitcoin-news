@@ -18,13 +18,6 @@ export type Tweet = {
   timestamp: number;
 };
 
-export type OverallResult = {
-  disclosed: number;
-  quiet: number;
-  error: number;
-  total: number;
-};
-
 export type CompanySearch = {
   name: string;
   url: string;
