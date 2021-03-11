@@ -8,7 +8,7 @@ const client = axios.create({
   headers: { ["content-type"]: "application/json" },
 });
 
-export const sendMessage = async (text: string, preview = false) => {
+export const sendMessage = async (text: string, preview = false, silent = false) => {
   let sentMessages = 0;
   for (const chatId of chatIds) {
     const message = await client.post("sendMessage", {
@@ -16,6 +16,7 @@ export const sendMessage = async (text: string, preview = false) => {
       text,
       parse_mode: "HTML",
       disable_web_page_preview: !preview,
+      disable_notification: silent,
     });
     if (message) sentMessages += 1;
   }
