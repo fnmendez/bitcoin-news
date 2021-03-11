@@ -14,6 +14,10 @@ export const SAFE_HTML = (text: string) => {
   return text.replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/&/g, "&amp;");
 };
 
+export const UTC = () => {
+  return moment().utc();
+};
+
 export const HUMAN_TIME = (time: string | undefined, td?: number): string => {
   if (!time) return "?";
   const datetime = moment(time);
