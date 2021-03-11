@@ -40,44 +40,33 @@ const getSecEdgarResults = async ({ name, url }): Promise<CompanyResult> => {
 };
 
 const TEXTIFY = (c: CompanyResult) => `<a href='${c.url}'>${c.name}</a>`;
-const resultsToText = ({ overall, cd, cq, ce, shouldAlert }: ResultToTextInput): string => {
-  console.log("overall", overall);
-  console.log("cd", cd);
-  console.log("cq", cq);
-  console.log("ce", ce);
-  console.log("shouldAlert", shouldAlert);
+
+const resultsToText = ({ cd, cq, ce, shouldAlert }: ResultToTextInput): string => {
   return dedent`
-    ${shouldAlert ? "\xF0\x9F\x9A\xA8 ATTENTION \xF0\x9F\x9A\xA8 (read by yourself)" : ""}
+    ${shouldAlert ? "🚨🚨 <b>SEC CHECK</b>" : "<b>SEC CHECK</b>"}
+    🏆 ${[...known.map(TEXTIFY), ...cd.map(TEXTIFY)].join(" ")}
+    🤐 ${cq.length ? cq.map(TEXTIFY).join(" ") : "-"}
+    err ${ce.length ? ce.map(TEXTIFY).join(" ") : "-"}
 
-    <a href='${known[0].url}'>SEC EDGAR CHECK</a>
-    \xF0\x9F\x8F\x86  ${[...known.map(TEXTIFY), ...cd.map(TEXTIFY)].join(" ")}
-    ??  ${cq.length && cq.map(TEXTIFY).join(" ")}
-    err ${ce.length && ce.map(TEXTIFY).join(" ")}
+    🏆 = found \`bitcoin\` in reports
+    ${CHILE_TIME()} - <a href='https://www.sec.gov/about.shtml'>SEC EDGAR</a>
 
-    \xF0\x9F\x8F\x86 = found \`bitcoin\` in reports
-    ${CHILE_TIME()} - SEC EDGAR</a>
-
-    ${shouldAlert ? "\xF0\x9F\x9A\xA8 ATTENTION \xF0\x9F\x9A\xA8 (read by yourself)" : ""}
+    ${shouldAlert ? "🚨🚨 always verify" : ""}
   `.trim();
 };
+
 async function sendResultsToTelegram(companiesResults: CompanyResult[], overall: OverallResult) {
-  const companiesDisclosed = companiesResults.filter((cr) => cr.status === "disclosed") || [];
-  const companiesQuiet = companiesResults.filter((cr) => cr.status === "quiet") || [];
-  const companiesError = companiesResults.filter((cr) => cr.status === "error") || [];
+  const compDiscl = companiesResults.filter((cr) => cr.status === "disclosed") || [];
+  const compQuiet = companiesResults.filter((cr) => cr.status === "quiet") || [];
+  const compError = companiesResults.filter((cr) => cr.status === "error") || [];
 
   // SET ALERT MODE
-  const ALERT_ACTIVATED = Boolean(companiesDisclosed.length); // (unknown disclosure occurred)
+  const ALERT_ACTIVATED = Boolean(compDiscl.length); // (unknown disclosure occurred)
 
-  const text = resultsToText({
-    overall,
-    cd: companiesDisclosed,
-    cq: companiesQuiet,
-    ce: companiesError,
-    shouldAlert: ALERT_ACTIVATED,
-  });
+  const text = resultsToText({ cd: compDiscl, cq: compQuiet, ce: compError, shouldAlert: ALERT_ACTIVATED });
   let success = false;
   if (ALERT_ACTIVATED) {
-    for (let i = 0; i < 3; i++) {
+    for (let i = 0; i < 8; i++) {
       const ok = await sendMessage(text, false, false);
       success = success || ok;
       await new Promise((r) => setTimeout(r, 1500));
@@ -95,9 +84,11 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     const { t } = req.query;
     let companies: CompanySearch[];
     if (!t || t === "1") {
-      companies = companiesHot;
+      companies = companies1;
     } else if (t === "2") {
-      companies = companiesOther;
+      companies = companies2;
+    } else if (t === "3") {
+      companies = companies3;
     } else {
       console.log("Invalid company type");
       throw new Error("Invalid company type");
@@ -143,7 +134,7 @@ const known: CompanyResult[] = [
   },
 ];
 
-const companiesHot: CompanySearch[] = [
+const companies1: CompanySearch[] = [
   {
     name: "AAPL",
     url:
@@ -164,6 +155,9 @@ const companiesHot: CompanySearch[] = [
     url:
       "https://www.sec.gov/edgar/search/#/q=bitcoin&dateRange=30d&ciks=0001326801&entityName=Facebook%2520Inc%2520(FB)%2520(CIK%25200001326801)",
   },
+];
+
+const companies2: CompanySearch[] = [
   {
     name: "ORCL",
     url:
@@ -179,9 +173,14 @@ const companiesHot: CompanySearch[] = [
     url:
       "https://www.sec.gov/edgar/search/#/q=bitcoin&dateRange=30d&ciks=0001065280&entityName=NETFLIX%2520INC%2520(NFLX)%2520(CIK%25200001065280)",
   },
+  {
+    name: "MSFT",
+    url:
+      "https://www.sec.gov/edgar/search/#/q=bitcoin&dateRange=30d&ciks=0000789019&entityName=MICROSOFT%2520CORP%2520(MSFT)%2520(CIK%25200000789019)",
+  },
 ];
 
-const companiesOther: CompanySearch[] = [
+const companies3: CompanySearch[] = [
   {
     name: "VISA",
     url:
@@ -201,11 +200,6 @@ const companiesOther: CompanySearch[] = [
     name: "JNJ",
     url:
       "https://www.sec.gov/edgar/search/#/q=bitcoin&dateRange=30d&ciks=0000200406&entityName=JOHNSON%2520%2526%2520JOHNSON%2520(JNJ)%2520(CIK%25200000200406)",
-  },
-  {
-    name: "MSFT",
-    url:
-      "https://www.sec.gov/edgar/search/#/q=bitcoin&dateRange=30d&ciks=0000789019&entityName=MICROSOFT%2520CORP%2520(MSFT)%2520(CIK%25200000789019)",
   },
   {
     name: "TENC",
