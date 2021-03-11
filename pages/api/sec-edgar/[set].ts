@@ -44,7 +44,7 @@ const TEXTIFY = (c: CompanyResult) => `<a href='${c.url}'>${c.name}</a>`;
 const resultsToText = ({ cd, cq, ce, shouldAlert }: ResultToTextInput): string => {
   if (!shouldAlert) {
     return dedent`
-      <b>SEC CHECK</B>: No <code>bitcoin</code> found
+      <b>SEC CHECK</B>: No disclosure found
       ${cq.length ? cq.map(TEXTIFY).join(" ") : "-"}
       ${CHILE_TIME()} - <a href='https://www.sec.gov/about.shtml'>SEC EDGAR</a>
     `.trim();
@@ -87,13 +87,13 @@ async function sendResultsToTelegram(companiesResults: CompanyResult[]) {
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   try {
-    const { t } = req.query;
+    const { set } = req.query;
     let companies: CompanySearch[];
-    if (!t || t === "1") {
+    if (set === "1") {
       companies = companies1;
-    } else if (t === "2") {
+    } else if (set === "2") {
       companies = companies2;
-    } else if (t === "3") {
+    } else if (set === "3") {
       companies = companies3;
     } else {
       console.log("Invalid company type");
