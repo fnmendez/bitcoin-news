@@ -44,19 +44,19 @@ const TEXTIFY = (c: CompanyResult) => `<a href='${c.url}'>${c.name}</a>`;
 const resultsToText = ({ cd, cq, ce, shouldAlert }: ResultToTextInput): string => {
   if (!shouldAlert) {
     return dedent`
-      <b>SEC CHECK</B>: No \`bitcoin\` found
-      Checked ${cq.length ? cq.map(TEXTIFY).join(" ") : "-"}
+      <b>SEC CHECK</B>: No <code>bitcoin</code> found
+      ${cq.length ? cq.map(TEXTIFY).join(" ") : "-"}
       ${CHILE_TIME()} - <a href='https://www.sec.gov/about.shtml'>SEC EDGAR</a>
     `.trim();
   } else {
     return dedent`
-      🚨🚨 <b>SEC CHECK - ATTENTION</b> 🚨🚨
+      🚨 <b>SEC CHECK 🚨 ATTENTION</b>
       🏆 ${cd.map(TEXTIFY).join(" ")}
 
       (found \`bitcoin\` in reports)
       ${CHILE_TIME()} - <a href='https://www.sec.gov/about.shtml'>SEC EDGAR</a>
 
-      ${shouldAlert ? "🚨🚨 always verify" : ""}
+      ${shouldAlert ? "<b>always verify</b>" : ""}
     `.trim();
   }
 };
