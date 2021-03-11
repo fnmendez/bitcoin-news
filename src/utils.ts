@@ -31,3 +31,12 @@ export const DATABASE_TIME = (time: string | undefined): string =>
 export const TIMESTAMP = (time: string | undefined): number => (time ? new Date(time).getTime() : new Date().getTime()); // fake
 
 export const SAFE_TITLE_KEY = (key: string) => key.substr(0, 330);
+
+export const SILENT_TIME = (): boolean => {
+  const hours = UTC().hours() - 3;
+  if (hours < 8 && 22 < hours) {
+    return true;
+  } else {
+    return false;
+  }
+};
