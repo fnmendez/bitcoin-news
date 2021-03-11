@@ -1,4 +1,4 @@
-import moment from "moment";
+import moment, { Moment } from "moment";
 
 export const CHUNK_ARRAY = (arr: any[], n): any[][] => {
   let i = 0;
@@ -25,10 +25,10 @@ export const HUMAN_TIME = (time: string | undefined, td?: number): string => {
   return datetime.format("YYYY/MM/DD, HH:mm:ss");
 };
 
-export const CHILE_TIME = () => {
+export const CHILE_TIME = (raw = false) => {
   const datetime = moment().utc();
   datetime.add(-3, "hours");
-  return datetime.format("YYYY/MM/DD, HH:mm:ss");
+  return raw ? datetime : datetime.format("YYYY/MM/DD, HH:mm:ss");
 };
 
 export const DATABASE_TIME = (time: string | undefined): string =>
@@ -39,8 +39,9 @@ export const TIMESTAMP = (time: string | undefined): number => (time ? new Date(
 export const SAFE_TITLE_KEY = (key: string) => key.substr(0, 330);
 
 export const SILENT_TIME = (): boolean => {
-  const hours = UTC().hours() - 3;
-  if (hours < 8 && 22 < hours) {
+  const chileTime = CHILE_TIME(true);
+  const hours = (chileTime as Moment).hours();
+  if (hours < 8 || 22 < hours) {
     return true;
   } else {
     return false;
