@@ -4,7 +4,7 @@ import puppeteer from "puppeteer";
 
 import { sendMessage } from "~/libs/telegram";
 import { CompanyResult, CompanySearch, OverallResult } from "~/src/types";
-import { CHUNK_ARRAY, HUMAN_TIME, UTC } from "~/src/utils";
+import { CHILE_TIME, CHUNK_ARRAY } from "~/src/utils";
 
 // companies at eof
 
@@ -67,7 +67,7 @@ const resultsToText = ({
     err ${ce.length && ce.map(TEXTIFY).join(" ")}
 
     🏆 = published docs with \`bitcoin\`
-    ${HUMAN_TIME(UTC().format(), -3)} - SEC EDGAR</a>
+    ${CHILE_TIME()} - SEC EDGAR</a>
 
     ${shouldAlert ? "<b>* don't trust, verify *</b>" : ""}
   `.trim();

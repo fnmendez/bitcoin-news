@@ -2,7 +2,7 @@ import cheerio from "cheerio";
 import dedent from "dedent";
 
 import { News } from "~/src/types";
-import { DATABASE_TIME, HUMAN_TIME, SAFE_HTML as SH, TIMESTAMP } from "~/src/utils";
+import { HUMAN_TIME, SAFE_HTML as SH, TIMESTAMP } from "~/src/utils";
 
 const sourceNameBlacklist = ["CoinGeek"];
 
@@ -37,7 +37,7 @@ export const GOOGLE_NEWS: Instruction = {
           title,
           sourceName,
           link: sourceUrl,
-          publishedAt: DATABASE_TIME(time),
+          publishedAt: humanTime,
           timestamp: TIMESTAMP(time),
           text: dedent`
           <b>${SH(title)}</b>

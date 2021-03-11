@@ -25,6 +25,12 @@ export const HUMAN_TIME = (time: string | undefined, td?: number): string => {
   return datetime.format("YYYY/MM/DD, HH:mm:ss");
 };
 
+export const CHILE_TIME = () => {
+  const datetime = moment().utc();
+  datetime.add(-3, "hours");
+  return datetime.format("YYYY/MM/DD, HH:mm:ss");
+};
+
 export const DATABASE_TIME = (time: string | undefined): string =>
   time ? moment(time).format("dddd D MMMM, HH:mm:ss") : "?";
 
