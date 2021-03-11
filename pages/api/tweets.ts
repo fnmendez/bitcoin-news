@@ -4,7 +4,7 @@ import * as dynamodb from "~/libs/dynamodb";
 import { sendMessage } from "~/libs/telegram";
 import { getRecentTweets, tweetToMessage } from "~/libs/twitter";
 import { Tweet } from "~/src/types";
-import { CHUNK_ARRAY } from "~/src/utils";
+import { CHUNK_ARRAY, SILENT_TIME } from "~/src/utils";
 
 async function saveTweets(tweets: Tweet[]) {
   if (!tweets?.length) return;
@@ -54,10 +54,11 @@ async function filterTweets(tweets: Tweet[]): Promise<Tweet[]> {
 async function sendTweetsToTelegram(tweets: Tweet[]): Promise<boolean> {
   const ordered = tweets.sort((a, b) => a.timestamp - b.timestamp);
   const batches = CHUNK_ARRAY(ordered, 3);
+  const silentMessage = SILENT_TIME();
   let success = true;
   for (const batch of batches) {
     const text = batch.map((t) => tweetToMessage(t)).join("\n\n");
-    const ok = await sendMessage(text, false);
+    const ok = await sendMessage(text, false, silentMessage);
     success = success && ok;
     await saveTweets(batch);
     await new Promise((r) => setTimeout(r, 800));
