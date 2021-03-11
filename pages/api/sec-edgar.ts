@@ -42,20 +42,26 @@ const getSecEdgarResults = async ({ name, url }): Promise<CompanyResult> => {
 const TEXTIFY = (c: CompanyResult) => `<a href='${c.url}'>${c.name}</a>`;
 
 const resultsToText = ({ cd, cq, ce, shouldAlert }: ResultToTextInput): string => {
-  return dedent`
-    ${shouldAlert ? "🚨🚨 <b>SEC CHECK</b>" : "<b>SEC CHECK</b>"}
-    🏆 ${[...known.map(TEXTIFY), ...cd.map(TEXTIFY)].join(" ")}
-    🤐 ${cq.length ? cq.map(TEXTIFY).join(" ") : "-"}
-    err ${ce.length ? ce.map(TEXTIFY).join(" ") : "-"}
+  if (!shouldAlert) {
+    return dedent`
+      <b>SEC CHECK</B>: No \`bitcoin\` found
+      Checked ${cq.length ? cq.map(TEXTIFY).join(" ") : "-"}
+      ${CHILE_TIME()} - <a href='https://www.sec.gov/about.shtml'>SEC EDGAR</a>
+    `.trim();
+  } else {
+    return dedent`
+      🚨🚨 <b>SEC CHECK - ATTENTION</b> 🚨🚨
+      🏆 ${cd.map(TEXTIFY).join(" ")}
 
-    🏆 = found \`bitcoin\` in reports
-    ${CHILE_TIME()} - <a href='https://www.sec.gov/about.shtml'>SEC EDGAR</a>
+      (found \`bitcoin\` in reports)
+      ${CHILE_TIME()} - <a href='https://www.sec.gov/about.shtml'>SEC EDGAR</a>
 
-    ${shouldAlert ? "🚨🚨 always verify" : ""}
-  `.trim();
+      ${shouldAlert ? "🚨🚨 always verify" : ""}
+    `.trim();
+  }
 };
 
-async function sendResultsToTelegram(companiesResults: CompanyResult[], overall: OverallResult) {
+async function sendResultsToTelegram(companiesResults: CompanyResult[]) {
   const compDiscl = companiesResults.filter((cr) => cr.status === "disclosed") || [];
   const compQuiet = companiesResults.filter((cr) => cr.status === "quiet") || [];
   const compError = companiesResults.filter((cr) => cr.status === "error") || [];
@@ -94,7 +100,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       throw new Error("Invalid company type");
     }
 
-    const overall: OverallResult = { disclosed: 0, quiet: 0, error: 0, total: 0 };
     let results: CompanyResult[] = [];
     const companiesBatches = CHUNK_ARRAY(companies, CONCURRENCY);
     for (const companyBatch of companiesBatches) {
@@ -105,12 +110,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       results = [...results, ...(await Promise.all(promises))];
     }
 
-    for (const result of results) {
-      overall["total"] += 1;
-      overall[result.status] += 1;
-    }
-
-    await sendResultsToTelegram(results, overall);
+    await sendResultsToTelegram(results);
 
     res.statusCode = 200;
     res.setHeader("Content-Type", "text/html");
