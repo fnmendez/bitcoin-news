@@ -104,7 +104,8 @@ async function sendNewsToTelegram(news: News[]): Promise<boolean> {
     const text = batch.map((n) => n.text).join("\n\n");
     const ok = await sendMessage(text, false, silentMessage);
     success = success && ok;
-    await new Promise((r) => setTimeout(r, 2000));
+    await saveBitcoinNews(batch);
+    await new Promise((r) => setTimeout(r, 800));
   }
   return success;
 }
@@ -126,7 +127,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     const filteredNews = await filterNews(news);
 
     if (filteredNews && filteredNews.length) {
-      await saveBitcoinNews(filteredNews);
       const success = await sendNewsToTelegram(filteredNews);
       if (success) {
         console.log("Successfully sent fresh news to registered chats");
