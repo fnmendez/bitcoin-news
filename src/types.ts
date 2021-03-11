@@ -35,7 +35,6 @@ export type CompanyStatus = "disclosed" | "quiet" | "error";
 export type CompanyResult = CompanySearch & { status: CompanyStatus };
 
 export type ResultToTextInput = {
-  overall: OverallResult;
   cd: CompanyResult[];
   cq: CompanyResult[];
   ce: CompanyResult[];
