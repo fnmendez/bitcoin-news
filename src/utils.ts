@@ -1,5 +1,7 @@
 import moment, { Moment } from "moment";
 
+import { SOURCE_NAME_BLACKLIST, TITLE_BLACKLIST } from "~/src/constants";
+
 export const CHUNK_ARRAY = (arr: any[], n): any[][] => {
   let i = 0;
   const ret: any[] = [];
@@ -46,4 +48,11 @@ export const SILENT_TIME = (): boolean => {
   } else {
     return false;
   }
+};
+
+export const BLACKLISTED = (sourceName: string, title: string): boolean => {
+  return (
+    SOURCE_NAME_BLACKLIST.includes(sourceName) ||
+    TITLE_BLACKLIST.some((bannedWord) => title.toLowerCase().includes(bannedWord))
+  );
 };
