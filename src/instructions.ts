@@ -5,9 +5,13 @@ import { News } from "~/src/types";
 import { HUMAN_TIME, SAFE_HTML as SH, TIMESTAMP } from "~/src/utils";
 
 const sourceNameBlacklist = ["CoinGeek"];
+const titleBlacklist = ["ripple", "xrp"];
 
-function blacklistedSource(sourceName: string) {
-  return sourceNameBlacklist.includes(sourceName);
+function blacklisted(sourceName: string, title: string) {
+  return (
+    sourceNameBlacklist.includes(sourceName) ||
+    titleBlacklist.some((bannedWord) => title.toLowerCase().includes(bannedWord))
+  );
 }
 
 type Instruction = {
@@ -32,7 +36,7 @@ export const GOOGLE_NEWS: Instruction = {
       const sourceUrl = `https://news.google.com${$(this).children("a").attr("href")?.slice(1)}`;
       const time = $(this).next("div").next("div").children("div").children("time").attr("datetime");
       const humanTime = HUMAN_TIME(time, -3);
-      if (title.match(/(Bitcoin|bitcoin|BTC|btc)/g) && !blacklistedSource(sourceName)) {
+      if (title.match(/(Bitcoin|bitcoin|BTC|btc)/g) && !blacklisted(sourceName, title)) {
         news.push({
           title,
           sourceName,
