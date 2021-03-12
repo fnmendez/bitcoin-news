@@ -52,7 +52,7 @@ export const SILENT_TIME = (): boolean => {
 
 export const BLACKLISTED = (sourceName: string, title: string): boolean => {
   return (
-    SOURCE_NAME_BLACKLIST.includes(sourceName) ||
+    SOURCE_NAME_BLACKLIST.includes(sourceName.toLowerCase()) ||
     TITLE_BLACKLIST.some((bannedWord) => title.toLowerCase().includes(bannedWord))
   );
 };
