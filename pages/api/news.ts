@@ -1,10 +1,9 @@
-import axios from "axios";
 import { NextApiRequest, NextApiResponse } from "next";
 
 import * as dynamodb from "~/libs/dynamodb";
 import { sendLog, sendMessage } from "~/libs/telegram";
 import { headers } from "~/src/constants";
-import * as instructions from "~/src/instructions";
+import { GOOGLE_NEWS } from "~/src/instructions";
 import { News } from "~/src/types";
 import { CHUNK_ARRAY, SAFE_TITLE_KEY } from "~/src/utils";
 
@@ -107,12 +106,9 @@ async function sendNewsToTelegram(news: News[]): Promise<boolean> {
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   try {
-    let news: News[] = [];
-    for (const link of instructions.GOOGLE_NEWS.links) {
-      const { data: html } = await axios.get(link.url, { headers });
-      const newsFromLink = instructions.GOOGLE_NEWS.cheerioProcess(html);
-      news = [...news, ...newsFromLink];
-    }
+    const raw = await fetch(GOOGLE_NEWS.link, { method: "GET", headers });
+    const html = await raw.text();
+    const news = GOOGLE_NEWS.cheerioProcess(html);
     const filteredNews = await filterNews(news);
     if (filteredNews && filteredNews.length) {
       await sendNewsToTelegram(filteredNews);
