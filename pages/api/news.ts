@@ -6,11 +6,11 @@ import dedent from "dedent";
 import { NextApiRequest, NextApiResponse } from "next";
 
 import * as dynamodb from "~/libs/dynamodb";
-import { sendMessage } from "~/libs/telegram";
+import { sendLog, sendMessage } from "~/libs/telegram";
 import { headers } from "~/src/constants";
 import * as instructions from "~/src/instructions";
 import { News } from "~/src/types";
-import { CHUNK_ARRAY, SAFE_TITLE_KEY, SILENT_TIME } from "~/src/utils";
+import { CHUNK_ARRAY, SAFE_TITLE_KEY } from "~/src/utils";
 
 async function saveBitcoinNews(news: News[]) {
   if (!news?.length) return;
@@ -86,11 +86,10 @@ async function filterNews(news: News[]): Promise<News[]> {
   const filteredByLink = news.filter((n) => !toFilterLink.includes(n.link));
   const toFilterTitle = (await getBitcoinNewsByTitle(filteredByLink)).map((n) => n["title"]);
   const filteredByTitleAndLink = filteredByLink.filter((n) => !toFilterTitle.includes(n.title));
-  console.log(dedent`
-    got: ${news.length}
-    link filter: ${filteredByLink.length}
-    title filter: ${filteredByTitleAndLink.length}
-    `);
+  sendLog(
+    dedent`[news] got: ${news.length} link filter: ${filteredByLink.length} title filter: ${filteredByTitleAndLink.length}`,
+    false,
+  );
 
   return filteredByTitleAndLink;
 }
@@ -98,11 +97,10 @@ async function filterNews(news: News[]): Promise<News[]> {
 async function sendNewsToTelegram(news: News[]): Promise<boolean> {
   const ordered = news.sort((a, b) => a.timestamp - b.timestamp);
   const batches = CHUNK_ARRAY(ordered, 8);
-  const silentMessage = true; // SILENT_TIME();
   let success = true;
   for (const batch of batches) {
     const text = batch.map((n) => n.text).join("\n\n");
-    const ok = await sendMessage(text, false, silentMessage);
+    const ok = await sendMessage(text, false, true);
     success = success && ok;
     await saveBitcoinNews(batch);
     await new Promise((r) => setTimeout(r, 800));
@@ -127,21 +125,14 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     const filteredNews = await filterNews(news);
 
     if (filteredNews && filteredNews.length) {
-      const success = await sendNewsToTelegram(filteredNews);
-      if (success) {
-        console.log("Successfully sent fresh news to registered chats");
-      } else {
-        console.log("Error sending news to registered chats");
-      }
+      await sendNewsToTelegram(filteredNews);
     }
 
     res.statusCode = 200;
     res.setHeader("Content-Type", "text/html");
     return res.end("ok");
-  } catch (e) {
-    const err = e as Error;
-    console.error(err);
-
+  } catch (err) {
+    sendLog(`[news] Error on handler: ${err.name}\n\`\`\`${err.stack}\`\`\``, true);
     res.statusCode = 500;
     res.setHeader("Content-Type", "text/html");
     return res.end(err.stack);
