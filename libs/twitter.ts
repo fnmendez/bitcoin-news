@@ -62,7 +62,7 @@ export const getRecentTweets = async (): Promise<Tweet[]> => {
       {},
     );
     const parsedTweets = tweets.map((tweet) => ({
-      ["tweet_id"]: tweet.id,
+      ["uid"]: tweet.id,
       ["author"]: userMap[tweet.author_id]["name"],
       ["username"]: userMap[tweet.author_id]["username"],
       ["text"]: tweet.text,
