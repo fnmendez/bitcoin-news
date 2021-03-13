@@ -14,18 +14,6 @@ async function saveBitcoinNews(news: News[]) {
   for (const batch of batches) {
     const params = {
       RequestItems: {
-        "bitcoin-news": batch.map((n) => ({
-          PutRequest: {
-            Item: {
-              source_url: n.link,
-              title: n.title,
-              keywords: n.keywords,
-              source_name: n.sourceName,
-              published_at: n.publishedAt,
-              timestamp: n.timestamp,
-            },
-          },
-        })),
         "bitcoin-news-titles": batch.map((n) => ({
           PutRequest: {
             Item: {
@@ -46,25 +34,20 @@ async function saveBitcoinNews(news: News[]) {
 }
 
 async function getBitcoinNews(news: News[]) {
-  if (!news?.length) return { byLink: [], byTitle: [] };
+  if (!news?.length) return [];
   const params = {
     RequestItems: {
-      "bitcoin-news": { Keys: news.map((n) => ({ ["source_url"]: n.link })) },
       "bitcoin-news-titles": { Keys: news.map((n) => ({ ["title"]: SAFE_TITLE_KEY(n.title) })) },
     },
   };
   const res = await dynamodbBatchGet(params);
-  return {
-    byLink: res.Responses?.["bitcoin-news"] || [],
-    byTitle: res.Responses?.["bitcoin-news-titles"] || [],
-  };
+  return res.Responses?.["bitcoin-news-titles"] || [];
 }
 
 async function filterNews(news: News[]): Promise<News[]> {
-  const { byLink, byTitle } = await getBitcoinNews(news);
-  const toFilterLink = byLink.map((n) => n["source_url"]);
-  const toFilterTitle = byTitle.map((n) => n["title"]);
-  const filtered = news.filter((n) => !toFilterLink.includes(n.link) && !toFilterTitle.includes(n.title));
+  const storedNews = await getBitcoinNews(news);
+  const toFilter = storedNews.map((n) => n["title"]);
+  const filtered = news.filter((n) => !toFilter.includes(n.link) && !toFilter.includes(n.title));
   sendLog({
     text: `[news] got: ${news.length} fresh: ${filtered.length}`,
     silent: false,
