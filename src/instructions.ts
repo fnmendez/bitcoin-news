@@ -44,24 +44,3 @@ export const GOOGLE_NEWS: Instruction = {
     return news;
   },
 };
-
-// export const SEC_GOV: Instruction = {
-//   links: [
-//     {
-//       name: "SEC:TSLA",
-//       url:
-//         "https://www.sec.gov/edgar/search/#/q=bitcoin&dateRange=30d&ciks=0001318605&entityName=Tesla%252C%2520Inc.%2520(TSLA)%2520(CIK%25200001318605)",
-//     },
-//     {
-//       name: "SEC:AAPL",
-//       url:
-//         "https://www.sec.gov/edgar/search/#/q=bitcoin&dateRange=30d&ciks=0000320193&entityName=Apple%2520Inc.%2520(AAPL)%2520(CIK%25200000320193)",
-//     },
-//     {
-//       name: "SEC:GOOG",
-//       url:
-//         "https://www.sec.gov/edgar/search/#/q=bitcoin&dateRange=30d&ciks=0001652044&entityName=Alphabet%2520Inc.%2520(GOOG%252C%2520GOOGL)%2520(CIK%25200001652044)",
-//     },
-//   ],
-//   cheerioProcess: console.log,
-// };
