@@ -1,5 +1,5 @@
 // import dedent from "dedent";
-// import { NextApiRequest, NextApiResponse } from "next";
+import { NextApiRequest, NextApiResponse } from "next";
 
 // import { getBrowser } from "~/libs/browser";
 // import { sendLog, sendMessage } from "~/libs/telegram";
@@ -84,6 +84,12 @@
 //     throw new Error("Error sending message");
 //   }
 // }
+
+export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+  res.statusCode = 200;
+  res.setHeader("Content-Type", "text/html");
+  return res.end("ok");
+}
 
 // export default async function handler(req: NextApiRequest, res: NextApiResponse) {
 //   try {
