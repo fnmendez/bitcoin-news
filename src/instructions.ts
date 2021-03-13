@@ -5,18 +5,12 @@ import { News } from "~/src/types";
 import { HUMAN_TIME, SAFE_HTML as SH, TIMESTAMP, BLACKLISTED } from "~/src/utils";
 
 type Instruction = {
-  links: { name: string; url: string; keywords: string[] }[];
+  link: string;
   cheerioProcess: any;
 };
 
 export const GOOGLE_NEWS: Instruction = {
-  links: [
-    {
-      name: "GOOGLE:BITCOIN:1h",
-      url: "https://news.google.com/search?q=Bitcoin%20when%3A1h&hl=en-US&gl=US&ceid=US%3Aen",
-      keywords: ["bitcoin"],
-    },
-  ],
+  link: "https://news.google.com/search?q=Bitcoin%20when%3A1h&hl=en-US&gl=US&ceid=US%3Aen",
   cheerioProcess: (html: string, keywords: string[]): News[] => {
     const news: News[] = [];
     const $ = cheerio.load(html);
