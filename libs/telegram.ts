@@ -19,6 +19,9 @@ export const sendMessage = async (text: string, preview = false, silent = false)
       disable_notification: silent,
     });
     const success = Boolean(message);
+    if (!success) {
+      await sendLog("Failed to send message", false);
+    }
     return success;
   } catch (err) {
     await sendLog(`Failed to send message: ${err.name}\n\`\`\`${err.stack}\`\`\``, false);
