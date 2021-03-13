@@ -2,7 +2,6 @@ import { AWSError } from "aws-sdk";
 import { DocumentClient } from "aws-sdk/clients/dynamodb";
 import { PromiseResult } from "aws-sdk/lib/request";
 import axios from "axios";
-import dedent from "dedent";
 import { NextApiRequest, NextApiResponse } from "next";
 
 import * as dynamodb from "~/libs/dynamodb";
@@ -12,8 +11,10 @@ import * as instructions from "~/src/instructions";
 import { News } from "~/src/types";
 import { CHUNK_ARRAY, SAFE_TITLE_KEY } from "~/src/utils";
 
+const DEV = process.env.VERCEL_ENV !== "production";
+
 async function saveBitcoinNews(news: News[]) {
-  if (!news?.length) return;
+  if (!news?.length || DEV) return;
   const batches = CHUNK_ARRAY(news, 25);
   const promises: Promise<PromiseResult<DocumentClient.BatchWriteItemOutput, AWSError>>[] = [];
   for (const batch of batches) {
