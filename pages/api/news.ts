@@ -1,20 +1,18 @@
 import { NextApiRequest, NextApiResponse } from "next";
 
-import * as dynamodb from "~/libs/dynamodb";
+import { batchWrite as dynamodbBatchWrite, batchGet as dynamodbBatchGet } from "~/libs/dynamodb";
 import { sendLog, sendMessage } from "~/libs/telegram";
 import { headers } from "~/src/constants";
 import { GOOGLE_NEWS } from "~/src/instructions";
 import { News } from "~/src/types";
 import { CHUNK_ARRAY, SAFE_TITLE_KEY } from "~/src/utils";
 
-const DEV = process.env.VERCEL_ENV !== "production";
-
 async function saveBitcoinNews(news: News[]) {
-  if (!news?.length || DEV) return;
+  if (!news?.length) return;
   const batches = CHUNK_ARRAY(news, 25);
   const promises: Promise<any>[] = [];
   for (const batch of batches) {
-    const paramsLink = {
+    const params = {
       RequestItems: {
         "bitcoin-news": batch.map((n) => ({
           PutRequest: {
@@ -28,10 +26,6 @@ async function saveBitcoinNews(news: News[]) {
             },
           },
         })),
-      },
-    };
-    const paramsTitle = {
-      RequestItems: {
         "bitcoin-news-titles": batch.map((n) => ({
           PutRequest: {
             Item: {
@@ -46,48 +40,36 @@ async function saveBitcoinNews(news: News[]) {
         })),
       },
     };
-    promises.push(dynamodb.batchWrite(paramsLink));
-    promises.push(dynamodb.batchWrite(paramsTitle));
+    promises.push(dynamodbBatchWrite(params));
   }
   await Promise.all(promises.map((p) => p.catch(console.log)));
 }
 
-async function getBitcoinNewsByLink(news: News[]) {
-  if (!news?.length) return [];
+async function getBitcoinNews(news: News[]) {
+  if (!news?.length) return { byLink: [], byTitle: [] };
   const params = {
     RequestItems: {
-      "bitcoin-news": {
-        Keys: news.map((n) => ({ ["source_url"]: n.link })),
-      },
+      "bitcoin-news": { Keys: news.map((n) => ({ ["source_url"]: n.link })) },
+      "bitcoin-news-titles": { Keys: news.map((n) => ({ ["title"]: SAFE_TITLE_KEY(n.title) })) },
     },
   };
-  const res = await dynamodb.batchGet(params);
-  return res.Responses?.["bitcoin-news"] || [];
-}
-
-async function getBitcoinNewsByTitle(news: News[]) {
-  if (!news?.length) return [];
-  const params = {
-    RequestItems: {
-      "bitcoin-news-titles": {
-        Keys: news.map((n) => ({ ["title"]: SAFE_TITLE_KEY(n.title) })),
-      },
-    },
+  const res = await dynamodbBatchGet(params);
+  return {
+    byLink: res.Responses?.["bitcoin-news"] || [],
+    byTitle: res.Responses?.["bitcoin-news-titles"] || [],
   };
-  const res = await dynamodb.batchGet(params);
-  return res.Responses?.["bitcoin-news-titles"] || [];
 }
 
 async function filterNews(news: News[]): Promise<News[]> {
-  const toFilterLink = (await getBitcoinNewsByLink(news)).map((n) => n["source_url"]);
-  const filteredByLink = news.filter((n) => !toFilterLink.includes(n.link));
-  const toFilterTitle = (await getBitcoinNewsByTitle(filteredByLink)).map((n) => n["title"]);
-  const filteredByTitleAndLink = filteredByLink.filter((n) => !toFilterTitle.includes(n.title));
+  const { byLink, byTitle } = await getBitcoinNews(news);
+  const toFilterLink = byLink.map((n) => n["source_url"]);
+  const toFilterTitle = byTitle.map((n) => n["title"]);
+  const filtered = news.filter((n) => !toFilterLink.includes(n.link) && !toFilterTitle.includes(n.title));
   sendLog({
-    text: `[news] got: ${news.length} link filter: ${filteredByLink.length} title filter: ${filteredByTitleAndLink.length}`,
+    text: `[news] got: ${news.length} fresh: ${filtered.length}`,
     silent: false,
   });
-  return filteredByTitleAndLink;
+  return filtered;
 }
 
 async function sendNewsToTelegram(news: News[]): Promise<boolean> {
