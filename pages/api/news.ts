@@ -1,6 +1,3 @@
-import { AWSError } from "aws-sdk";
-import { DocumentClient } from "aws-sdk/clients/dynamodb";
-import { PromiseResult } from "aws-sdk/lib/request";
 import axios from "axios";
 import { NextApiRequest, NextApiResponse } from "next";
 
@@ -16,7 +13,7 @@ const DEV = process.env.VERCEL_ENV !== "production";
 async function saveBitcoinNews(news: News[]) {
   if (!news?.length || DEV) return;
   const batches = CHUNK_ARRAY(news, 25);
-  const promises: Promise<PromiseResult<DocumentClient.BatchWriteItemOutput, AWSError>>[] = [];
+  const promises: Promise<any>[] = [];
   for (const batch of batches) {
     const paramsLink = {
       RequestItems: {
@@ -91,7 +88,6 @@ async function filterNews(news: News[]): Promise<News[]> {
     text: `[news] got: ${news.length} link filter: ${filteredByLink.length} title filter: ${filteredByTitleAndLink.length}`,
     silent: false,
   });
-
   return filteredByTitleAndLink;
 }
 
@@ -112,23 +108,15 @@ async function sendNewsToTelegram(news: News[]): Promise<boolean> {
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   try {
     let news: News[] = [];
-
-    for (const sourceOfNews of Object.values(instructions)) {
-      let newsFromSource: News[] = [];
-      for (const link of sourceOfNews.links) {
-        const { data: html } = await axios.get(link.url, { headers });
-        const newsFromLink = sourceOfNews.cheerioProcess(html);
-        newsFromSource = [...newsFromSource, ...newsFromLink];
-      }
-      news = [...news, ...newsFromSource];
+    for (const link of instructions.GOOGLE_NEWS.links) {
+      const { data: html } = await axios.get(link.url, { headers });
+      const newsFromLink = instructions.GOOGLE_NEWS.cheerioProcess(html);
+      news = [...news, ...newsFromLink];
     }
-
     const filteredNews = await filterNews(news);
-
     if (filteredNews && filteredNews.length) {
       await sendNewsToTelegram(filteredNews);
     }
-
     res.statusCode = 200;
     res.setHeader("Content-Type", "text/html");
     return res.end("ok");
