@@ -33,3 +33,8 @@ export type ResultToTextInput = {
   ce: CompanyResult[];
   shouldAlert: boolean;
 };
+
+export type Instruction = {
+  link: string;
+  cheerioProcess: any;
+};

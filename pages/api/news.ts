@@ -1,10 +1,11 @@
+import cheerio from "cheerio";
 import { NextApiRequest, NextApiResponse } from "next";
 
 import { batchWrite as dynamodbBatchWrite, batchGet as dynamodbBatchGet } from "~/libs/dynamodb";
 import { sendLog, sendMessage } from "~/libs/telegram";
 import { headers } from "~/src/constants";
-import { GOOGLE_NEWS } from "~/src/instructions";
-import { News } from "~/src/types";
+import { Instruction, News } from "~/src/types";
+import { HUMAN_TIME, SAFE_HTML as SH, TIMESTAMP, BLACKLISTED } from "~/src/utils";
 import { CHUNK_ARRAY, SAFE_TITLE_KEY } from "~/src/utils";
 
 async function saveBitcoinNews(news: News[]) {
@@ -88,3 +89,30 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     return res.end(err.stack);
   }
 }
+
+const GOOGLE_NEWS: Instruction = {
+  link: "https://news.google.com/search?q=Bitcoin%20when%3A1h&hl=en-US&gl=US&ceid=US%3Aen",
+  cheerioProcess: (html: string, keywords: string[]): News[] => {
+    const news: News[] = [];
+    const $ = cheerio.load(html);
+    $("h3").each(function (this: any) {
+      const title = $(this)?.text()?.trim();
+      const sourceName = $(this).next("div").next("div").children("div").children("a").text().trim();
+      const sourceUrl = `https://news.google.com${$(this).children("a").attr("href")?.slice(1)}`;
+      const time = $(this).next("div").next("div").children("div").children("time").attr("datetime");
+      const humanTime = HUMAN_TIME(time, -3);
+      if (title.match(/(Bitcoin|bitcoin|BTC|btc)/g) && !BLACKLISTED(sourceName, title)) {
+        news.push({
+          title,
+          sourceName,
+          link: sourceUrl,
+          publishedAt: humanTime,
+          timestamp: TIMESTAMP(time),
+          text: `<b>${SH(title)}</b>\n${SH(sourceName)}\n${SH(humanTime)} - <a href='${sourceUrl}'>Read more</a>`,
+          keywords,
+        });
+      }
+    });
+    return news;
+  },
+};
