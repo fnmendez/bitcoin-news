@@ -1,8 +1,8 @@
 {
-  "name": "flayyer-crawler",
+  "name": "bitcoin-news",
   "private": true,
   "author": "@fnmendez",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "engines": {
     "node": "14.x"
   },
