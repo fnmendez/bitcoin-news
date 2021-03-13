@@ -1,7 +1,7 @@
 import dedent from "dedent";
 import { NextApiRequest, NextApiResponse } from "next";
-import puppeteer from "puppeteer";
 
+import { getBrowser } from "~/libs/browser";
 import { sendMessage } from "~/libs/telegram";
 import { CompanyResult, CompanySearch, ResultToTextInput } from "~/src/types";
 import { CHILE_TIME, CHUNK_ARRAY } from "~/src/utils";
@@ -10,10 +10,11 @@ import { CHILE_TIME, CHUNK_ARRAY } from "~/src/utils";
 
 const TIMEOUT_FOR_EACH_RESULT = 1200; // ms
 const CONCURRENCY = 2;
+const DEV = process.env.NODE_ENV !== "production";
 
 const getSecEdgarResults = async ({ name, url }): Promise<CompanyResult> => {
   try {
-    const browser = await puppeteer.launch();
+    const browser = await getBrowser(DEV);
     const page = await browser.newPage();
     await page.goto(url);
     const selectors = "td.filetype a.preview-file";
