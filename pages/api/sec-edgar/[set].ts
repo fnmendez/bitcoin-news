@@ -2,19 +2,19 @@ import dedent from "dedent";
 import { NextApiRequest, NextApiResponse } from "next";
 
 import { getBrowser } from "~/libs/browser";
-import { sendMessage } from "~/libs/telegram";
+import { sendLog, sendMessage } from "~/libs/telegram";
 import { CompanyResult, CompanySearch, ResultToTextInput } from "~/src/types";
 import { CHILE_TIME, CHUNK_ARRAY } from "~/src/utils";
 
 // companies at eof
 
-const TIMEOUT_FOR_EACH_RESULT = 1200; // ms
+const TIMEOUT_FOR_EACH_RESULT = 1500; // ms
 const CONCURRENCY = 2;
-const DEV = process.env.NODE_ENV !== "production";
+const LOCAL = !process.env.VERCEL;
 
 const getSecEdgarResults = async ({ name, url }): Promise<CompanyResult> => {
   try {
-    const browser = await getBrowser(DEV);
+    const browser = await getBrowser(LOCAL);
     const page = await browser.newPage();
     await page.goto(url);
     const selectors = "td.filetype a.preview-file";
@@ -42,7 +42,7 @@ const getSecEdgarResults = async ({ name, url }): Promise<CompanyResult> => {
 
 const TEXTIFY = (c: CompanyResult) => `<a href='${c.url}'>${c.name}</a>`;
 
-const resultsToText = ({ cd, cq, ce, shouldAlert }: ResultToTextInput): string => {
+const resultsToText = ({ cd, cq, shouldAlert }: ResultToTextInput): string => {
   if (!shouldAlert) {
     return dedent`
       <b>SEC CHECK</B>: No disclosure found
@@ -74,14 +74,15 @@ async function sendResultsToTelegram(companiesResults: CompanyResult[]) {
   let success = false;
   if (ALERT_ACTIVATED) {
     for (let i = 0; i < 8; i++) {
-      const ok = await sendMessage(text, false, false);
+      const ok = await sendMessage({ text: text, silent: false });
       success = success || ok;
       await new Promise((r) => setTimeout(r, 1500));
     }
   } else {
-    success = await sendMessage(text, false, true);
+    success = await sendLog({ text: text, silent: true });
   }
   if (!success) {
+    await sendLog({ text: "[sec-edgar] Error sending message", silent: false });
     throw new Error("Error sending message");
   }
 }
