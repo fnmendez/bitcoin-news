@@ -1,4 +1,3 @@
-import axios from "axios";
 import dedent from "dedent";
 import moment from "moment";
 import qs from "qs";
@@ -26,11 +25,6 @@ const usernames = [
 const custom = ["from:whale_alert #BTC", "from:zerohedge bitcoin"];
 const query = `(-is:reply -is:retweet (${usernames.map((u) => `from:${u}`).join(" OR ")})) OR ${custom.join(" OR ")}`;
 
-const client = axios.create({
-  baseURL: `https://api.twitter.com/2`,
-  headers: { ["authorization"]: `Bearer ${bearer}`, ...headers },
-});
-
 type TweetsSearchRecentResponse = {
   data: { id: string; author_id: string; created_at: string; text: string }[];
   includes: { users: { name: string; id: string; username: string }[] };
@@ -41,8 +35,8 @@ export const getRecentTweets = async (): Promise<Tweet[]> => {
   const startTime = moment();
   startTime.add(-1, "hours");
   try {
-    const res = await client.get(
-      `tweets/search/recent?${qs.stringify({
+    const res = await fetch(
+      `https://api.twitter.com/2/tweets/search/recent?${qs.stringify({
         ["query"]: query,
         ["tweet.fields"]: "created_at",
         ["expansions"]: "author_id",
@@ -50,14 +44,16 @@ export const getRecentTweets = async (): Promise<Tweet[]> => {
         ["max_results"]: "50",
         ["start_time"]: startTime.format(),
       })}`,
+      { method: "GET", headers: { ["authorization"]: `Bearer ${bearer}`, ...headers } },
     );
-    if (!res?.data?.data || !res.data.includes?.users) {
+    const body = await res.json();
+    if (!body?.data || !body.includes?.users) {
       return [];
     }
     const {
       data: tweets,
       includes: { users },
-    } = res.data as TweetsSearchRecentResponse;
+    } = body as TweetsSearchRecentResponse;
     const userMap = users.reduce(
       (acc, cur) => ({
         ...acc,
