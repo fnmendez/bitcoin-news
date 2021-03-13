@@ -1,7 +1,9 @@
 import axios from "axios";
 
 const token = process.env.TELEGRAM_TOKEN;
-const mainChatId = "-1001407421921";
+const DEV = process.env.VERCEL_ENV !== "production";
+
+const mainChatId = DEV ? "-535034198" : "-1001407421921";
 const hqChatId = "-535034198";
 
 const client = axios.create({
