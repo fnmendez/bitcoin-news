@@ -1,15 +1,26 @@
 const token = process.env.TELEGRAM_TOKEN;
-const DEV = process.env.VERCEL_ENV !== "production";
 
-const mainChatId = DEV ? "-535034198" : "-1001407421921";
+const mainChatId = "-1001407421921";
 const hqChatId = "-535034198";
 
-export const sendMessage = async ({ text, silent }: { text: string; silent: boolean }): Promise<boolean> => {
+type SendMessage = { text: string; silent: boolean };
+
+export const sendMessage = async ({ text, silent }: SendMessage): Promise<boolean> => {
+  const success = _sendMessage({ text, silent, chatId: mainChatId });
+  return success;
+};
+
+export const sendLog = async ({ text, silent }: SendMessage): Promise<boolean> => {
+  const success = _sendMessage({ text, silent, chatId: hqChatId });
+  return success;
+};
+
+const _sendMessage = async ({ text, silent, chatId }: SendMessage & { chatId: string }): Promise<boolean> => {
   try {
     const res = await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
       method: "POST",
       body: JSON.stringify({
-        chat_id: mainChatId,
+        chat_id: chatId,
         text: text,
         disable_notification: silent,
         disable_web_page_preview: true,
@@ -18,7 +29,7 @@ export const sendMessage = async ({ text, silent }: { text: string; silent: bool
       headers: { ["content-type"]: "application/json" },
     });
     const success = res.status >= 200 && res.status < 300;
-    if (success) {
+    if (!success) {
       await sendLog({ text: "Failed to send message", silent: false });
     }
     return success;
@@ -26,20 +37,4 @@ export const sendMessage = async ({ text, silent }: { text: string; silent: bool
     await sendLog({ text: `Failed to send message: ${err.name}\n\`\`\`${err.stack}\`\`\``, silent: false });
     return false;
   }
-};
-
-export const sendLog = async ({ text, silent }: { text: string; silent: boolean }): Promise<boolean> => {
-  const res = await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
-    method: "POST",
-    body: JSON.stringify({
-      chat_id: hqChatId,
-      text,
-      parse_mode: "HTML",
-      disable_web_page_preview: true,
-      disable_notification: silent,
-    }),
-    headers: { ["content-type"]: "application/json" },
-  });
-  const success = res.status >= 200 && res.status < 300;
-  return Boolean(success);
 };
