@@ -6,11 +6,9 @@ import { sendLog, sendMessage } from "~/libs/telegram";
 import { CompanyResult, CompanySearch, ResultToTextInput } from "~/src/types";
 import { CHILE_TIME, CHUNK_ARRAY } from "~/src/utils";
 
-// companies at eof
-
 const TIMEOUT_FOR_EACH_RESULT = 1500; // ms
 const CONCURRENCY = 2;
-const LOCAL = !process.env.VERCEL;
+const LOCAL = false; // !process.env.VERCEL;
 
 const getSecEdgarResults = async ({ name, url }): Promise<CompanyResult> => {
   try {
