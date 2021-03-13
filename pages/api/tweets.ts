@@ -6,8 +6,10 @@ import { getRecentTweets, tweetToMessage } from "~/libs/twitter";
 import { Tweet } from "~/src/types";
 import { CHUNK_ARRAY } from "~/src/utils";
 
+const DEV = process.env.VERCEL_ENV !== "production";
+
 async function saveTweets(tweets: Tweet[]) {
-  if (!tweets?.length) return;
+  if (!tweets?.length || DEV) return;
   const batches = CHUNK_ARRAY(tweets, 25);
   for (const batch of batches) {
     const params = {
