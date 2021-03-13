@@ -1,7 +1,7 @@
 import { NextApiRequest, NextApiResponse } from "next";
 
 import * as dynamodb from "~/libs/dynamodb";
-import { sendMessage } from "~/libs/telegram";
+import { sendLog, sendMessage } from "~/libs/telegram";
 import { getRecentTweets, tweetToMessage } from "~/libs/twitter";
 import { Tweet } from "~/src/types";
 import { CHUNK_ARRAY, SILENT_TIME } from "~/src/utils";
@@ -47,7 +47,7 @@ async function getTweets(tweetIds: string[]) {
 async function filterTweets(tweets: Tweet[]): Promise<Tweet[]> {
   const alreadyStoredTweetsIds = (await getTweets(tweets.map((t) => t["tweet_id"]))).map((t) => t["tweet_id"]);
   const filtered = tweets.filter((t) => !alreadyStoredTweetsIds.includes(t["tweet_id"]));
-  console.log(`got: ${tweets.length}\nfresh: ${filtered.length}`);
+  sendLog(`[tweets] got: ${tweets.length}\nfresh: ${filtered.length}`, true);
   return filtered;
 }
 
@@ -73,22 +73,13 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     const filteredTweets = await filterTweets(recentTweets);
 
     if (filteredTweets && filteredTweets.length) {
-      const success = await sendTweetsToTelegram(filteredTweets);
-      if (success) {
-        console.log("Successfully sent fresh tweets to registered chats");
-      } else {
-        console.log("Error sending tweets to registered chats");
-        throw new Error("Error sending tweets to registered chats");
-      }
+      await sendTweetsToTelegram(filteredTweets);
     }
-
     res.statusCode = 200;
     res.setHeader("Content-Type", "text/html");
     return res.end("ok");
-  } catch (e) {
-    const err = e as Error;
-    console.error(err);
-
+  } catch (err) {
+    sendLog(`[tweets] Error on handler: ${err.name}\n\`\`\`${err.stack}\`\`\``, false);
     res.statusCode = 500;
     res.setHeader("Content-Type", "text/html");
     return res.end(err.stack);
