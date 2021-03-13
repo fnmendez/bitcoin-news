@@ -4,10 +4,10 @@ import core from "puppeteer-core";
 
 let _browser: core.Browser | puppeteer.Browser | null;
 
-export async function getBrowser(isDev: boolean) {
+export async function getBrowser(isLocal: boolean) {
   if (!_browser) {
     const options = await getOptions();
-    if (isDev) {
+    if (isLocal) {
       _browser = await puppeteer.launch();
     } else {
       _browser = await core.launch(options);
