@@ -4,7 +4,7 @@ import * as dynamodb from "~/libs/dynamodb";
 import { sendLog, sendMessage } from "~/libs/telegram";
 import { getRecentTweets, tweetToMessage } from "~/libs/twitter";
 import { Tweet } from "~/src/types";
-import { CHUNK_ARRAY, SILENT_TIME } from "~/src/utils";
+import { CHUNK_ARRAY } from "~/src/utils";
 
 async function saveTweets(tweets: Tweet[]) {
   if (!tweets?.length) return;
@@ -79,7 +79,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     res.setHeader("Content-Type", "text/html");
     return res.end("ok");
   } catch (err) {
-    sendLog(`[tweets] Error on handler: ${err.name}\n\`\`\`${err.stack}\`\`\``, false);
+    sendLog(`[tweets] Error on handler: ${err.name}\n\`\`\`${err.stack}\`\`\``, true);
     res.statusCode = 500;
     res.setHeader("Content-Type", "text/html");
     return res.end(err.stack);
