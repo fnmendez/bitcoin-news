@@ -80,9 +80,9 @@ export const getRecentTweets = async (): Promise<Tweet[]> => {
 
 export const tweetToMessage = (tweet: Tweet): string => {
   const message = dedent`
-    <b>${tweet.author}</b> @${tweet.username}
+    🕊️ <b>${tweet.author}</b> @${tweet.username}
     ${tweet.text.replace(/\n\n/g, "\n")}
-    ${TODAY_TIME(tweet.date, -3)} - <a href='${tweet.link}'>See on Twitter 🕊️</a>
+    ${TODAY_TIME(tweet.date, -3)} - <a href='${tweet.link}'>See on Twitter</a>
   `;
   return message;
 };

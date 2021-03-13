@@ -109,7 +109,7 @@ const GOOGLE_NEWS: Instruction = {
           link: sourceUrl,
           publishedAt: humanTime,
           timestamp: TIMESTAMP(time),
-          text: `<b>${SH(title)}</b>\n${SH(sourceName)}\n${SH(todayTime)} - <a href='${sourceUrl}'>Read article 📰</a>`,
+          text: `📰 <b>${SH(title)}</b>\n${SH(sourceName)}\n${SH(todayTime)} - <a href='${sourceUrl}'>Read article</a>`,
           keywords,
         });
       }
