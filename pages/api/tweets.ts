@@ -80,7 +80,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     res.setHeader("Content-Type", "text/html");
     return res.end("ok");
   } catch (err) {
-    sendLog({ text: `[tweets] Error on handler: ${err.name}\n\`\`\`${err.stack}\`\`\``, silent: false });
+    sendLog({ text: `[tweets] Error on handler: ${err.name}\n<pre>${err.stack}</pre>`, silent: false });
     res.statusCode = 500;
     res.setHeader("Content-Type", "text/html");
     return res.end(err.stack);
