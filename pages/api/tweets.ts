@@ -14,17 +14,9 @@ async function saveTweets(tweets: Tweet[]) {
   for (const batch of batches) {
     const params = {
       RequestItems: {
-        "bitcoin-tweets": batch.map((t) => ({
+        "bitcoin-blacklist": batch.map((t) => ({
           PutRequest: {
-            Item: {
-              tweet_id: t.tweet_id,
-              link: t.link,
-              text: t.text,
-              author: t.author,
-              username: t.username,
-              date: t.date,
-              timestamp: t.timestamp,
-            } as Tweet,
+            Item: { uid: t.uid, timestamp: t.timestamp } as Tweet,
           },
         })),
       },
@@ -37,18 +29,18 @@ async function getTweets(tweetIds: string[]) {
   if (!tweetIds?.length) return [];
   const params = {
     RequestItems: {
-      "bitcoin-tweets": {
-        Keys: tweetIds.map((tweetId) => ({ ["tweet_id"]: tweetId })),
+      "bitcoin-blacklist": {
+        Keys: tweetIds.map((tweetId) => ({ ["uid"]: tweetId })),
       },
     },
   };
   const res = await dynamodb.batchGet(params);
-  return res.Responses?.["bitcoin-tweets"] || [];
+  return res.Responses?.["bitcoin-blacklist"] || [];
 }
 
 async function filterTweets(tweets: Tweet[]): Promise<Tweet[]> {
-  const alreadyStoredTweetsIds = (await getTweets(tweets.map((t) => t["tweet_id"]))).map((t) => t["tweet_id"]);
-  const filtered = tweets.filter((t) => !alreadyStoredTweetsIds.includes(t["tweet_id"]));
+  const alreadyStoredTweetsIds = (await getTweets(tweets.map((t) => t["uid"]))).map((t) => t["uid"]);
+  const filtered = tweets.filter((t) => !alreadyStoredTweetsIds.includes(t["uid"]));
   sendLog({ text: `[tweets] got: ${tweets.length} fresh: ${filtered.length}`, silent: true });
   return filtered;
 }
