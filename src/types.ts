@@ -9,7 +9,7 @@ export type News = {
 };
 
 export type Tweet = {
-  tweet_id: string;
+  uid: string;
   author: string;
   username: string;
   text: string;
