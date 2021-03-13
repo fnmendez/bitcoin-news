@@ -47,18 +47,17 @@ async function getTweets(tweetIds: string[]) {
 async function filterTweets(tweets: Tweet[]): Promise<Tweet[]> {
   const alreadyStoredTweetsIds = (await getTweets(tweets.map((t) => t["tweet_id"]))).map((t) => t["tweet_id"]);
   const filtered = tweets.filter((t) => !alreadyStoredTweetsIds.includes(t["tweet_id"]));
-  sendLog(`[tweets] got: ${tweets.length}\nfresh: ${filtered.length}`, true);
+  sendLog({ text: `[tweets] got: ${tweets.length}\nfresh: ${filtered.length}`, silent: true });
   return filtered;
 }
 
 async function sendTweetsToTelegram(tweets: Tweet[]): Promise<boolean> {
   const ordered = tweets.sort((a, b) => a.timestamp - b.timestamp);
   const batches = CHUNK_ARRAY(ordered, 3);
-  const silentMessage = true; // SILENT_TIME();
   let success = true;
   for (const batch of batches) {
     const text = batch.map((t) => tweetToMessage(t)).join("\n\n");
-    const ok = await sendMessage(text, false, silentMessage);
+    const ok = await sendMessage({ text: text, silent: true });
     success = success && ok;
     await saveTweets(batch);
     await new Promise((r) => setTimeout(r, 800));
@@ -79,7 +78,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     res.setHeader("Content-Type", "text/html");
     return res.end("ok");
   } catch (err) {
-    sendLog(`[tweets] Error on handler: ${err.name}\n\`\`\`${err.stack}\`\`\``, true);
+    sendLog({ text: `[tweets] Error on handler: ${err.name}\n\`\`\`${err.stack}\`\`\``, silent: false });
     res.statusCode = 500;
     res.setHeader("Content-Type", "text/html");
     return res.end(err.stack);

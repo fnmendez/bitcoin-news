@@ -86,10 +86,10 @@ async function filterNews(news: News[]): Promise<News[]> {
   const filteredByLink = news.filter((n) => !toFilterLink.includes(n.link));
   const toFilterTitle = (await getBitcoinNewsByTitle(filteredByLink)).map((n) => n["title"]);
   const filteredByTitleAndLink = filteredByLink.filter((n) => !toFilterTitle.includes(n.title));
-  sendLog(
-    dedent`[news] got: ${news.length} link filter: ${filteredByLink.length} title filter: ${filteredByTitleAndLink.length}`,
-    false,
-  );
+  sendLog({
+    text: `[news] got: ${news.length} link filter: ${filteredByLink.length} title filter: ${filteredByTitleAndLink.length}`,
+    silent: false,
+  });
 
   return filteredByTitleAndLink;
 }
@@ -100,7 +100,7 @@ async function sendNewsToTelegram(news: News[]): Promise<boolean> {
   let success = true;
   for (const batch of batches) {
     const text = batch.map((n) => n.text).join("\n\n");
-    const ok = await sendMessage(text, false, true);
+    const ok = await sendMessage({ text: text, silent: true });
     success = success && ok;
     await saveBitcoinNews(batch);
     await new Promise((r) => setTimeout(r, 800));
@@ -132,7 +132,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     res.setHeader("Content-Type", "text/html");
     return res.end("ok");
   } catch (err) {
-    sendLog(`[news] Error on handler: ${err.name}\n\`\`\`${err.stack}\`\`\``, true);
+    sendLog({ text: `[news] Error on handler: ${err.name}\n\`\`\`${err.stack}\`\`\``, silent: false });
     res.statusCode = 500;
     res.setHeader("Content-Type", "text/html");
     return res.end(err.stack);
