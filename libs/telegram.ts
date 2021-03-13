@@ -1,6 +1,7 @@
 const token = process.env.TELEGRAM_TOKEN;
 
 const mainChatId = "-1001407421921";
+// const mainChatId = "-535034198"; // debug
 const hqChatId = "-535034198";
 
 type SendMessage = { text: string; silent: boolean };
