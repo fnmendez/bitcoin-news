@@ -30,11 +30,11 @@ const _sendMessage = async ({ text, silent, chatId }: SendMessage & { chatId: st
     });
     const success = res.status >= 200 && res.status < 300;
     if (!success) {
-      await sendLog({ text: "Failed to send message", silent: false });
+      await sendLog({ text: `Failed to send message\n<pre>${text}</pre>`, silent: false });
     }
     return success;
   } catch (err) {
-    await sendLog({ text: `Failed to send message: ${err.name}\n\`\`\`${err.stack}\`\`\``, silent: false });
+    await sendLog({ text: `Failed to send message: ${err.name}\n<pre>${err.stack}</pre>`, silent: false });
     return false;
   }
 };

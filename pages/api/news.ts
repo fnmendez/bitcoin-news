@@ -5,7 +5,7 @@ import { batchWrite as dynamodbBatchWrite, batchGet as dynamodbBatchGet } from "
 import { sendLog, sendMessage } from "~/libs/telegram";
 import { headers } from "~/src/constants";
 import { Instruction, News } from "~/src/types";
-import { HUMAN_TIME, SAFE_HTML as SH, TIMESTAMP, BLACKLISTED } from "~/src/utils";
+import { HUMAN_TIME, SAFE_HTML as SH, TIMESTAMP, BLACKLISTED, TODAY_TIME } from "~/src/utils";
 import { CHUNK_ARRAY, SAFE_TITLE_KEY } from "~/src/utils";
 
 async function saveBitcoinNews(news: News[]) {
@@ -101,6 +101,7 @@ const GOOGLE_NEWS: Instruction = {
       const sourceUrl = `https://news.google.com${$(this).children("a").attr("href")?.slice(1)}`;
       const time = $(this).next("div").next("div").children("div").children("time").attr("datetime");
       const humanTime = HUMAN_TIME(time, -3);
+      const todayTime = TODAY_TIME(time, -3);
       if (title.match(/(Bitcoin|bitcoin|BTC|btc)/g) && !BLACKLISTED(sourceName, title)) {
         news.push({
           title,
@@ -108,7 +109,7 @@ const GOOGLE_NEWS: Instruction = {
           link: sourceUrl,
           publishedAt: humanTime,
           timestamp: TIMESTAMP(time),
-          text: `<b>${SH(title)}</b>\n${SH(sourceName)}\n${SH(humanTime)} - <a href='${sourceUrl}'>Read more</a>`,
+          text: `<b>${SH(title)}</b>\n${SH(sourceName)}\n${SH(todayTime)} - <a href='${sourceUrl}'>Read article 📰</a>`,
           keywords,
         });
       }

@@ -27,6 +27,13 @@ export const HUMAN_TIME = (time: string | undefined, td?: number): string => {
   return datetime.format("YYYY/MM/DD, HH:mm:ss");
 };
 
+export const TODAY_TIME = (time: string | undefined, td?: number): string => {
+  if (!time) return "?";
+  const datetime = moment(time);
+  if (td) datetime.add(td, "hours");
+  return datetime.format("HH:mm:ss");
+};
+
 export const CHILE_TIME = (raw = false) => {
   const datetime = moment().utc();
   datetime.add(-3, "hours");

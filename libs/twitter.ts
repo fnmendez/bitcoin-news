@@ -4,7 +4,7 @@ import qs from "qs";
 
 import { headers } from "~/src/constants";
 import { Tweet } from "~/src/types";
-import { HUMAN_TIME, TIMESTAMP } from "~/src/utils";
+import { HUMAN_TIME, TIMESTAMP, TODAY_TIME } from "~/src/utils";
 
 const bearer = process.env.TWITTER_BEARER_TOKEN;
 
@@ -73,7 +73,7 @@ export const getRecentTweets = async (): Promise<Tweet[]> => {
 
     return parsedTweets;
   } catch (err) {
-    console.log(`Error getting tweets: ${err}`);
+    console.log(`[tweets] Error getting tweets: <pre>${err}</pre>`);
     throw new Error(`Error getting tweets: ${err}`);
   }
 };
@@ -82,7 +82,7 @@ export const tweetToMessage = (tweet: Tweet): string => {
   const message = dedent`
     <b>${tweet.author}</b> @${tweet.username}
     ${tweet.text.replace(/\n\n/g, "\n")}
-    ${HUMAN_TIME(tweet.date, -3)} - <a href='${tweet.link}'>See on Twitter</a>
+    ${TODAY_TIME(tweet.date, -3)} - <a href='${tweet.link}'>See on Twitter 🕊️</a>
   `;
   return message;
 };
