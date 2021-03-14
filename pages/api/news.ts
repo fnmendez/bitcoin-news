@@ -49,10 +49,10 @@ async function filterNews(news: News[]): Promise<News[]> {
   const storedNews = await getBitcoinNews(news);
   const toFilter = storedNews.map((n) => n["title"]);
   const filtered = news.filter((n) => !toFilter.includes(n.link) && !toFilter.includes(n.title));
-  sendLog({
-    text: `[news] got: ${news.length} fresh: ${filtered.length}`,
-    silent: false,
-  });
+  // sendLog({
+  //   text: `[news] got: ${news.length} fresh: ${filtered.length}`,
+  //   silent: false,
+  // });
   return filtered;
 }
 
