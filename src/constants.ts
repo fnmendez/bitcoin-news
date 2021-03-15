@@ -6,5 +6,5 @@ export const headers = {
     "Mozilla/5.0 (Macintosh; Intel Mac OS X 11_1_0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/88.0.4324.96 Safari/537.36",
 };
 
-export const SOURCE_NAME_BLACKLIST = ["coingeek", "fintech zoom", "ambcrypto", "beincrypto", "btcmanager", "cointelegraph"];
+export const SOURCE_NAME_BLACKLIST = ["coingeek", "fintech zoom", "ambcrypto", "ambcrypto news", "beincrypto", "btcmanager", "cointelegraph"];
 export const TITLE_BLACKLIST = ["ripple", "xrp", "cointelegraph"];
