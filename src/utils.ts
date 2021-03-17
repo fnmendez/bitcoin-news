@@ -20,6 +20,13 @@ export const UTC = () => {
   return moment().utc();
 };
 
+export const HUMAN_DATE = (time: string | undefined, td?: number): string => {
+  if (!time) return "?";
+  const datetime = moment(time);
+  if (td) datetime.add(td, "hours");
+  return datetime.format("YYYY/MM/DD");
+};
+
 export const HUMAN_TIME = (time: string | undefined, td?: number): string => {
   if (!time) return "?";
   const datetime = moment(time);
