@@ -52,9 +52,11 @@ async function sendTweetsToTelegram(tweets: Tweet[]): Promise<boolean> {
   for (const batch of batches) {
     const text = batch.map((t) => tweetToMessage(t)).join("\n\n");
     const ok = await sendMessage({ text: text, silent: true });
+    if (ok) {
+      await saveTweets(batch);
+      await new Promise((r) => setTimeout(r, 800));
+    }
     success = success && ok;
-    await saveTweets(batch);
-    await new Promise((r) => setTimeout(r, 800));
   }
   return success;
 }
