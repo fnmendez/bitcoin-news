@@ -17,4 +17,12 @@ export const SOURCE_NAME_BLACKLIST = [
   "inside bitcoins",
   "obn",
 ];
-export const TITLE_BLACKLIST = ["ripple", "xrp", "cointelegraph", "nft", "price analysis", "price prediction"];
+export const TITLE_BLACKLIST = [
+  "ripple",
+  "xrp",
+  "cointelegraph",
+  "nft",
+  "price analysis",
+  "price prediction",
+  "bitcoin cash",
+];
