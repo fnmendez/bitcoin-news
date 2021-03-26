@@ -1,6 +1,6 @@
 import moment, { Moment } from "moment";
 
-import { SOURCE_NAME_BLACKLIST, TITLE_BLACKLIST } from "~/src/constants";
+import { SOURCE_NAME_BLACKLIST, TITLE_BLACKLIST, TITLE_BLACKLIST_SETS } from "~/src/constants";
 
 export const CHUNK_ARRAY = (arr: any[], n): any[][] => {
   let i = 0;
@@ -68,6 +68,7 @@ export const BLACKLISTED = (sourceName: string, title: string): boolean => {
   const titleLowerCased = title.toLowerCase();
   return (
     SOURCE_NAME_BLACKLIST.includes(sourceName.toLowerCase()) ||
-    TITLE_BLACKLIST.some((bannedWord) => titleLowerCased.includes(bannedWord))
+    TITLE_BLACKLIST.some((bannedWord) => titleLowerCased.includes(bannedWord)) ||
+    TITLE_BLACKLIST_SETS.some((set) => set.every((w) => titleLowerCased.includes(w)))
   );
 };
