@@ -36,6 +36,7 @@ export const TITLE_BLACKLIST = [
   "quantum comp",
   "stolen",
   "fraud",
+  "cardano",
 ];
 
 // must match every word on the set to be omitted
