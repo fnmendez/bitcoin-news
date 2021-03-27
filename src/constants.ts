@@ -42,4 +42,5 @@ export const TITLE_BLACKLIST_SETS = [
   ["tesla", "accept", "bitcoin"],
   ["ethereum", "overtake", "bitcoin"],
   ["bitcoin", "ban", "could", "be"],
+  ["pay", "571", "million"],
 ];
