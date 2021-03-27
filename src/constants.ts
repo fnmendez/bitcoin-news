@@ -34,10 +34,12 @@ export const TITLE_BLACKLIST = [
   "gambling",
   "argo blockchain",
   "quantum comp",
+  "stolen",
 ];
 
 // must match every word on the set to be omitted
 export const TITLE_BLACKLIST_SETS = [
   ["tesla", "accept", "bitcoin"],
   ["ethereum", "overtake", "bitcoin"],
+  ["bitcoin", "ban", "could", "be"],
 ];
