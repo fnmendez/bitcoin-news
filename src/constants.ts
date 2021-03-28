@@ -18,6 +18,7 @@ export const SOURCE_NAME_BLACKLIST = [
   "inside bitcoins",
   "obn",
   "cryptonewsz",
+  "jumbo news",
 ];
 
 // must match any of the words to be omitted
