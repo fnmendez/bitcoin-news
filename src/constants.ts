@@ -38,6 +38,7 @@ export const TITLE_BLACKLIST = [
   "stolen",
   "fraud",
   "cardano",
+  "market analysis",
 ];
 
 // must match every word on the set to be omitted
