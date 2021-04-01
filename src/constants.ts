@@ -38,6 +38,7 @@ export const TITLE_BLACKLIST: string[] = [
   "fraud",
   "cardano",
   "cryptocurrencies",
+  "teletubbies",
 ];
 
 // must match every word on the set to be omitted
