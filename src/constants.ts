@@ -50,4 +50,5 @@ export const TITLE_BLACKLIST_SETS: string[][] = [
   ["market", "analysis"],
   ["price", "analysis"],
   ["price", "prediction"],
+  ["tesla", "helped", "patch"],
 ];
