@@ -35,7 +35,7 @@ type TweetsSearchRecentResponse = {
 
 export const getRecentTweets = async (): Promise<Tweet[]> => {
   const startTime = moment();
-  startTime.add(-1, "hours");
+  startTime.add(-20, "minutes");
   try {
     const res = await fetch(
       `https://api.twitter.com/2/tweets/search/recent?${qs.stringify({
