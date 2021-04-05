@@ -41,6 +41,7 @@ async function getTweets(tweetIds: string[]) {
 async function filterTweets(tweets: Tweet[]): Promise<Tweet[]> {
   const alreadyStoredTweetsIds = (await getTweets(tweets.map((t) => t["uid"]))).map((t) => t["uid"]);
   const filtered = tweets.filter((t) => !alreadyStoredTweetsIds.includes(t["uid"]));
+  console.log(`[tweets] got: ${tweets.length} fresh: ${filtered.length}`);
   // sendLog({ text: `[tweets] got: ${tweets.length} fresh: ${filtered.length}`, silent: true });
   return filtered;
 }
