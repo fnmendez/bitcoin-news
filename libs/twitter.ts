@@ -4,7 +4,7 @@ import qs from "qs";
 
 import { headers } from "~/src/constants";
 import { Tweet } from "~/src/types";
-import { HUMAN_TIME, TIMESTAMP, TODAY_TIME } from "~/src/utils";
+import { TIMESTAMP, TODAY_TIME } from "~/src/utils";
 
 const bearer = process.env.TWITTER_BEARER_TOKEN;
 
