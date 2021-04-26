@@ -24,7 +24,7 @@ const usernames = [
   "100trillionUSD",
   "nobsbitcoin",
 ];
-const custom = ['from:whale_alert #BTC ("to unknown" OR "to #Xapo")', "from:zerohedge bitcoin"];
+const custom = ["from:whale_alert #BTC", "from:zerohedge bitcoin"];
 const query = `(-is:reply -is:retweet (${usernames.map((u) => `from:${u}`).join(" OR ")})) OR ${custom.join(" OR ")}`;
 
 type TweetsSearchRecentResponse = {
