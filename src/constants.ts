@@ -38,18 +38,13 @@ export const TITLE_BLACKLIST: string[] = [
   "fraud",
   "cardano",
   "cryptocurrencies",
-  "teletubbies",
 ];
 
 // must match every word on the set to be omitted
 export const TITLE_BLACKLIST_SETS: string[][] = [
-  ["tesla", "accept", "bitcoin"],
   ["ethereum", "overtake", "bitcoin"],
   ["bitcoin", "ban", "could", "be"],
-  ["pay", "$57", "million"],
-  ["uk", "$57", "man"],
   ["market", "analysis"],
   ["price", "analysis"],
   ["price", "prediction"],
-  ["tesla", "helped", "patch"],
 ];
