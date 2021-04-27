@@ -43,7 +43,7 @@ export const TODAY_TIME = (time: string | undefined, td?: number): string => {
 
 export const CHILE_TIME = (raw = false) => {
   const datetime = moment().utc();
-  datetime.add(-3, "hours");
+  datetime.add(-4, "hours");
   return raw ? datetime : datetime.format("YYYY/MM/DD, HH:mm:ss");
 };
 
