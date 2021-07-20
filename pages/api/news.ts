@@ -100,7 +100,7 @@ const GOOGLE_NEWS: Instruction = {
       const title = $(this)?.text()?.trim();
       const sourceName = $(this).next("div").children("div").children("a").text().trim();
       const sourceUrl = `https://news.google.com${$(this).children("a").attr("href")?.slice(1)}`;
-      const time = $(this).next("div").next("div").children("time").attr("datetime");
+      const time = $(this).next("div").children("div").children("time").attr("datetime");
       const humanTime = HUMAN_TIME(time, -4);
       const todayTime = TODAY_TIME(time, -4);
       if (title.match(/(Bitcoin|bitcoin|BTC|btc)/g) && !BLACKLISTED(sourceName, title)) {
