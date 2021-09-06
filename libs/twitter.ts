@@ -24,9 +24,11 @@ const usernames = [
   "100trillionUSD",
   "nobsbitcoin",
   "SenLummis",
+  "dergigi",
+  "BitcoinMagazine",
 ];
-const custom = ["from:whale_alert #BTC", "from:zerohedge bitcoin"];
-const query = `(-is:reply -is:retweet (${usernames.map((u) => `from:${u}`).join(" OR ")})) OR ${custom.join(" OR ")}`;
+const custom = ["from:whale_alert #BTC", "from:zerohedge bitcoin", "from:nayibbukele bitcoin"];
+const query = `(-is:reply (${usernames.map((u) => `from:${u}`).join(" OR ")})) OR ${custom.join(" OR ")}`;
 
 type TweetsSearchRecentResponse = {
   data: { id: string; author_id: string; created_at: string; text: string }[];
