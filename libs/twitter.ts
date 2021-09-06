@@ -27,7 +27,12 @@ const usernames = [
   "dergigi",
   "BitcoinMagazine",
 ];
-const custom = ["from:whale_alert #BTC", "from:zerohedge bitcoin", "from:nayibbukele bitcoin"];
+const custom = [
+  "from:whale_alert #BTC",
+  "from:zerohedge bitcoin",
+  "from:nayibbukele bitcoin",
+  "from:RicardoBSalinas bitcoin",
+];
 const query = `(-is:reply (${usernames.map((u) => `from:${u}`).join(" OR ")})) OR ${custom.join(" OR ")}`;
 
 type TweetsSearchRecentResponse = {
