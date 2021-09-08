@@ -36,6 +36,10 @@ export const SOURCE_NAME_BLACKLIST: string[] = [
   "moneyweek",
   "altcoin buzz",
   "tokenpost",
+  "crypto briefing",
+  "decrypt",
+  "thestreet",
+  "invezz",
 ];
 
 // must match any of the words to be omitted
