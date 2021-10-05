@@ -2,7 +2,7 @@ import { NextApiRequest, NextApiResponse } from "next";
 
 import * as dynamodb from "~/libs/dynamodb";
 import { sendLog, sendMessage } from "~/libs/telegram";
-import { getRecentTweets, tweetToMessage } from "~/libs/twitter";
+import { getRecentTweets, tweetToMessageTelegram } from "~/libs/twitter";
 import { Tweet } from "~/src/types";
 import { CHUNK_ARRAY } from "~/src/utils";
 
@@ -50,7 +50,7 @@ async function sendTweetsToTelegram(tweets: Tweet[]): Promise<boolean> {
   const batches = CHUNK_ARRAY(ordered, 3);
   let success = true;
   for (const batch of batches) {
-    const text = batch.map((t) => tweetToMessage(t)).join("\n\n");
+    const text = batch.map((t) => tweetToMessageTelegram(t)).join("\n\n");
     const ok = await sendMessage({ text: text, silent: true });
     if (ok) {
       await saveTweets(batch);
