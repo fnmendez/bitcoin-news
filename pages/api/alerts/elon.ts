@@ -14,7 +14,7 @@ async function saveTweets(tweets: Tweet[]) {
   for (const batch of batches) {
     const params = {
       RequestItems: {
-        "bitcoin-blacklist": batch.map((t) => ({
+        "bitcoin-blacklist-2": batch.map((t) => ({
           PutRequest: {
             Item: { uid: t.uid, timestamp: t.timestamp } as Tweet,
           },
@@ -29,13 +29,13 @@ async function getTweets(tweetIds: string[]) {
   if (!tweetIds?.length) return [];
   const params = {
     RequestItems: {
-      "bitcoin-blacklist": {
+      "bitcoin-blacklist-2": {
         Keys: tweetIds.map((tweetId) => ({ ["uid"]: tweetId })),
       },
     },
   };
   const res = await dynamodb.batchGet(params);
-  return res.Responses?.["bitcoin-blacklist"] || [];
+  return res.Responses?.["bitcoin-blacklist-2"] || [];
 }
 
 async function filterTweets(tweets: Tweet[]): Promise<Tweet[]> {
