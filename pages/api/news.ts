@@ -2,7 +2,7 @@ import cheerio from "cheerio";
 import { NextApiRequest, NextApiResponse } from "next";
 
 import { batchWrite as dynamodbBatchWrite, batchGet as dynamodbBatchGet } from "~/libs/dynamodb";
-import * as slack from "~/libs/slack";
+// import * as slack from "~/libs/slack";
 import * as telegram from "~/libs/telegram";
 import { headers } from "~/src/constants";
 import { Instruction, News } from "~/src/types";
@@ -65,10 +65,10 @@ async function sendNewsToTelegramAndSlack(news: News[]): Promise<boolean> {
   let success = true;
   for (const batch of batches) {
     const text = batch.map((n) => n.text).join("\n\n");
-    const textSlack = batch.map((n) => n.textSlack).join("\n\n");
+    // const textSlack = batch.map((n) => n.textSlack).join("\n\n");
     const okTelegram = await telegram.sendMessage({ text: text, silent: true });
-    const okSlack = await slack.sendMessage(textSlack);
-    success = success && okTelegram && okSlack;
+    // const okSlack = await slack.sendMessage(textSlack);
+    success = success && okTelegram; // && okSlack;
     await saveBitcoinNews(batch);
     await new Promise((r) => setTimeout(r, 800));
   }

@@ -1,7 +1,7 @@
 import { NextApiRequest, NextApiResponse } from "next";
 
 import * as dynamodb from "~/libs/dynamodb";
-import * as slack from "~/libs/slack";
+// import * as slack from "~/libs/slack";
 import * as telegram from "~/libs/telegram";
 import { getRecentTweets, tweetToMessageSlack, tweetToMessageTelegram } from "~/libs/twitter";
 import { Tweet } from "~/src/types";
@@ -57,10 +57,10 @@ async function sendTweetsToTelegramAndSlack(tweets: Tweet[]): Promise<boolean> {
   let success = true;
   for (const batch of batches) {
     const text = batch.map((t) => tweetToMessageTelegram(t)).join("\n\n");
-    const textSlack = batch.map((t) => tweetToMessageSlack(t)).join("\n\n");
+    // const textSlack = batch.map((t) => tweetToMessageSlack(t)).join("\n\n");
     const ok = await telegram.sendMessage({ text: text, silent: true });
-    const okSlack = await slack.sendMessage(textSlack);
-    if (ok || okSlack) {
+    // const okSlack = await slack.sendMessage(textSlack);
+    if (ok) {
       await saveTweets(batch);
       await new Promise((r) => setTimeout(r, 800));
     }
