@@ -5,6 +5,7 @@ export type News = {
   link: string;
   title: string;
   text: string;
+  textSlack: string;
   keywords: string[];
 };
 
