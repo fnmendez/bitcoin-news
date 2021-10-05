@@ -34,7 +34,7 @@ const _sendMessage = async ({ text, silent, chatId }: SendMessage & { chatId: st
       await sendLog({ text: `Failed to send message\n<pre>${text}</pre>`, silent: false });
     }
     return success;
-  } catch (err) {
+  } catch (err: any) {
     await sendLog({ text: `Failed to send message: ${err.name}\n<pre>${err.stack}</pre>`, silent: false });
     return false;
   }
