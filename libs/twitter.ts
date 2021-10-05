@@ -88,11 +88,20 @@ export const getRecentTweets = async (): Promise<Tweet[]> => {
   }
 };
 
-export const tweetToMessage = (tweet: Tweet): string => {
+export const tweetToMessageTelegram = (tweet: Tweet): string => {
   const message = dedent`
     🐦 <b>${tweet.author}</b> @${tweet.username}
     ${tweet.text.replace(/\n\n/g, "\n")}
     ${TODAY_TIME(tweet.date, -3)} - <a href='${tweet.link}'>See on Twitter</a>
+  `;
+  return message;
+};
+
+export const tweetToMessageSlack = (tweet: Tweet): string => {
+  const message = dedent`
+    🐦 *${tweet.author}* @${tweet.username}
+    ${tweet.text.replace(/\n\n/g, "\n")}
+    ${TODAY_TIME(tweet.date, -3)} - <${tweet.link}|See on Twitter>
   `;
   return message;
 };
