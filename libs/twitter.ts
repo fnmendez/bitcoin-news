@@ -82,7 +82,7 @@ export const getRecentTweets = async (): Promise<Tweet[]> => {
     }));
 
     return parsedTweets;
-  } catch (err) {
+  } catch (err: any) {
     console.log(`[tweets] Error getting tweets: <pre>${err}</pre>`);
     throw new Error(`Error getting tweets: ${err}`);
   }

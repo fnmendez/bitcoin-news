@@ -50,7 +50,7 @@ export const getWithdrawalAmount = async (index: number, daysInterval = 5): Prom
     console.log(withdrawals);
     const lessInExchanges = withdrawals.reduce((acc, cur) => acc + cur["bitcoins"], 0);
     return lessInExchanges;
-  } catch (err) {
+  } catch (err: any) {
     console.log(`[tweets] Error getting tweets: <pre>${err}</pre>`);
     throw new Error(`Error getting tweets: ${err}`);
   }

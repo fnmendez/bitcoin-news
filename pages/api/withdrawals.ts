@@ -9,7 +9,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     res.statusCode = 200;
     res.setHeader("Content-Type", "text/html");
     return res.end("ok");
-  } catch (err) {
+  } catch (err: any) {
     res.statusCode = 500;
     res.setHeader("Content-Type", "text/html");
     return res.end(err.stack);
