@@ -4,7 +4,7 @@ export const sendMessage = async (text: string): Promise<boolean> => {
   try {
     const res = await fetch(webhookURL, {
       method: "POST",
-      body: JSON.stringify({ text }),
+      body: JSON.stringify({ text, unfurl_links: false, unfurl_media: false }),
       headers: { ["content-type"]: "application/json" },
     });
     const success = res.status >= 200 && res.status < 300;
